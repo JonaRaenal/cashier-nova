@@ -1,66 +1,69 @@
 // ============================================
-// CashierNova — Transaction Model
-// Operasi database untuk tabel transactions & transaction_items
-// Menggunakan BEGIN/COMMIT/ROLLBACK untuk atomic operations
-// Dependencies: config/db
+// CashierNova — Transaction Model (sql.js)
+// Operasi database untuk transaksi (atomic)
+// Dependencies: config/db (sql.js)
 // ============================================
 
-const { pool } = require('../config/db');
+const { getDb, saveDatabase } = require('../config/db');
+
+const queryAll = (sql, params = []) => {
+  const db = getDb();
+  const stmt = db.prepare(sql);
+  stmt.bind(params);
+  const rows = [];
+  while (stmt.step()) rows.push(stmt.getAsObject());
+  stmt.free();
+  return rows;
+};
+
+const queryOne = (sql, params = []) => {
+  const db = getDb();
+  const stmt = db.prepare(sql);
+  stmt.bind(params);
+  let row = null;
+  if (stmt.step()) row = stmt.getAsObject();
+  stmt.free();
+  return row;
+};
 
 const transactionModel = {
-  /**
-   * Membuat transaksi baru dengan items (atomic)
-   * @param {Object} data - Header transaksi
-   * @param {Array} items - Array item transaksi
-   * @returns {Object} Transaksi yang dibuat
-   */
   create: async (data, items) => {
-    const connection = await pool.getConnection();
+    const db = getDb();
 
     try {
-      await connection.beginTransaction();
+      db.run('BEGIN TRANSACTION');
 
       // Buat header transaksi
-      const [result] = await connection.query(
+      db.run(
         `INSERT INTO transactions 
          (invoice_number, user_id, total_amount, tax_amount, grand_total, payment_amount, change_amount, payment_method, notes)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [
-          data.invoice_number,
-          data.user_id,
-          data.total_amount,
-          data.tax_amount,
-          data.grand_total,
-          data.payment_amount,
-          data.change_amount,
-          data.payment_method || 'cash',
-          data.notes || null,
-        ]
+        [data.invoice_number, data.user_id, data.total_amount, data.tax_amount,
+         data.grand_total, data.payment_amount, data.change_amount,
+         data.payment_method || 'cash', data.notes || null]
       );
 
-      const transactionId = result.insertId;
+      const transactionId = db.exec('SELECT last_insert_rowid() as id')[0].values[0][0];
 
-      // Masukkan semua item transaksi dan kurangi stok
+      // Masukkan items dan kurangi stok
       for (const item of items) {
-        await connection.query(
-          `INSERT INTO transaction_items 
-           (transaction_id, product_id, product_name, price, quantity, subtotal)
+        db.run(
+          `INSERT INTO transaction_items (transaction_id, product_id, product_name, price, quantity, subtotal)
            VALUES (?, ?, ?, ?, ?, ?)`,
           [transactionId, item.product_id, item.product_name, item.price, item.quantity, item.subtotal]
         );
 
-        // Kurangi stok produk
-        const [stockResult] = await connection.query(
-          'UPDATE products SET stock = stock - ? WHERE id = ? AND stock >= ? AND deleted_at IS NULL',
-          [item.quantity, item.product_id, item.quantity]
-        );
-
-        if (stockResult.affectedRows === 0) {
+        // Cek stok sebelum kurangi
+        const product = queryOne('SELECT stock FROM products WHERE id = ? AND deleted_at IS NULL', [item.product_id]);
+        if (!product || product.stock < item.quantity) {
           throw { statusCode: 400, message: `Stok produk "${item.product_name}" tidak mencukupi.` };
         }
+
+        db.run('UPDATE products SET stock = stock - ? WHERE id = ?', [item.quantity, item.product_id]);
       }
 
-      await connection.commit();
+      db.run('COMMIT');
+      saveDatabase();
 
       return {
         id: transactionId,
@@ -69,22 +72,15 @@ const transactionModel = {
         items,
       };
     } catch (err) {
-      await connection.rollback();
+      db.run('ROLLBACK');
       throw err;
-    } finally {
-      connection.release();
     }
   },
 
-  /**
-   * Mengambil daftar transaksi dengan filter dan pagination
-   */
   findAll: async ({ startDate, endDate, page = 1, limit = 10 }) => {
     let query = `
       SELECT t.*, u.name as cashier_name 
-      FROM transactions t 
-      LEFT JOIN users u ON t.user_id = u.id 
-      WHERE 1=1
+      FROM transactions t LEFT JOIN users u ON t.user_id = u.id WHERE 1=1
     `;
     let countQuery = 'SELECT COUNT(*) as total FROM transactions t WHERE 1=1';
     const params = [];
@@ -96,7 +92,6 @@ const transactionModel = {
       params.push(startDate);
       countParams.push(startDate);
     }
-
     if (endDate) {
       query += ' AND DATE(t.created_at) <= ?';
       countQuery += ' AND DATE(t.created_at) <= ?';
@@ -104,108 +99,62 @@ const transactionModel = {
       countParams.push(endDate);
     }
 
-    // Total count
-    const [countResult] = await pool.query(countQuery, countParams);
-    const total = countResult[0].total;
+    const countResult = queryOne(countQuery, countParams);
+    const total = countResult ? countResult.total : 0;
 
-    // Pagination
     const offset = (page - 1) * limit;
     query += ' ORDER BY t.created_at DESC LIMIT ? OFFSET ?';
     params.push(Number(limit), Number(offset));
 
-    const [rows] = await pool.query(query, params);
+    const rows = queryAll(query, params);
 
     return {
       data: rows,
-      meta: {
-        page: Number(page),
-        limit: Number(limit),
-        total,
-        totalPages: Math.ceil(total / limit),
-      },
+      meta: { page: Number(page), limit: Number(limit), total, totalPages: Math.ceil(total / limit) },
     };
   },
 
-  /**
-   * Mencari transaksi berdasarkan ID (termasuk items)
-   */
   findById: async (id) => {
-    const [rows] = await pool.query(
-      `SELECT t.*, u.name as cashier_name 
-       FROM transactions t 
-       LEFT JOIN users u ON t.user_id = u.id 
-       WHERE t.id = ?`,
+    const row = queryOne(
+      `SELECT t.*, u.name as cashier_name FROM transactions t LEFT JOIN users u ON t.user_id = u.id WHERE t.id = ?`,
       [id]
     );
-
-    if (!rows[0]) return null;
-
-    // Ambil items transaksi
-    const [items] = await pool.query(
-      'SELECT * FROM transaction_items WHERE transaction_id = ?',
-      [id]
-    );
-
-    return { ...rows[0], items };
+    if (!row) return null;
+    const items = queryAll('SELECT * FROM transaction_items WHERE transaction_id = ?', [id]);
+    return { ...row, items };
   },
 
-  /**
-   * Generate nomor invoice unik
-   * Format: INV-YYYYMMDD-XXXX
-   */
   generateInvoiceNumber: async () => {
     const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
-    const [rows] = await pool.query(
-      "SELECT COUNT(*) as count FROM transactions WHERE DATE(created_at) = CURDATE()"
-    );
-    const count = rows[0].count + 1;
+    const todayDate = new Date().toISOString().slice(0, 10);
+    const result = queryOne("SELECT COUNT(*) as count FROM transactions WHERE DATE(created_at) = ?", [todayDate]);
+    const count = (result ? result.count : 0) + 1;
     return `INV-${today}-${String(count).padStart(4, '0')}`;
   },
 
-  /**
-   * Ringkasan dashboard — total hari ini
-   */
   getTodaySummary: async () => {
-    const [rows] = await pool.query(`
-      SELECT 
-        COALESCE(SUM(grand_total), 0) as total_sales,
-        COUNT(*) as total_transactions
-      FROM transactions 
-      WHERE DATE(created_at) = CURDATE()
-    `);
-    return rows[0];
+    const todayDate = new Date().toISOString().slice(0, 10);
+    const row = queryOne(`
+      SELECT COALESCE(SUM(grand_total), 0) as total_sales, COUNT(*) as total_transactions
+      FROM transactions WHERE DATE(created_at) = ?
+    `, [todayDate]);
+    return row || { total_sales: 0, total_transactions: 0 };
   },
 
-  /**
-   * Data chart penjualan per hari
-   * @param {number} range - Jumlah hari (7 atau 30)
-   */
   getSalesChart: async (range = 7) => {
-    const [rows] = await pool.query(`
-      SELECT 
-        DATE(created_at) as date,
-        COALESCE(SUM(grand_total), 0) as total_sales,
-        COUNT(*) as total_transactions
-      FROM transactions
-      WHERE created_at >= DATE_SUB(CURDATE(), INTERVAL ? DAY)
-      GROUP BY DATE(created_at)
-      ORDER BY date ASC
-    `, [range]);
-    return rows;
+    return queryAll(`
+      SELECT DATE(created_at) as date, COALESCE(SUM(grand_total), 0) as total_sales, COUNT(*) as total_transactions
+      FROM transactions WHERE created_at >= datetime('now', ? || ' days')
+      GROUP BY DATE(created_at) ORDER BY date ASC
+    `, [`-${range}`]);
   },
 
-  /**
-   * 5 transaksi terbaru untuk dashboard
-   */
   getRecentTransactions: async () => {
-    const [rows] = await pool.query(`
+    return queryAll(`
       SELECT t.id, t.invoice_number, t.grand_total, t.payment_method, t.created_at, u.name as cashier_name
-      FROM transactions t
-      LEFT JOIN users u ON t.user_id = u.id
-      ORDER BY t.created_at DESC
-      LIMIT 5
+      FROM transactions t LEFT JOIN users u ON t.user_id = u.id
+      ORDER BY t.created_at DESC LIMIT 5
     `);
-    return rows;
   },
 };
 

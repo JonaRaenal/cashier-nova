@@ -14,13 +14,13 @@ const logger = require('../utils/logger');
 const errorHandler = (err, req, res, _next) => {
   logger.error(err.message, { stack: err.stack });
 
-  // Error validasi MySQL
-  if (err.code === 'ER_DUP_ENTRY') {
+  // Error UNIQUE constraint SQLite
+  if (err.code === 'SQLITE_CONSTRAINT_UNIQUE' || (err.message && err.message.includes('UNIQUE constraint'))) {
     return error(res, 'Data sudah ada. Pastikan tidak ada duplikasi.', 409);
   }
 
-  // Error foreign key MySQL
-  if (err.code === 'ER_NO_REFERENCED_ROW_2') {
+  // Error foreign key SQLite
+  if (err.code === 'SQLITE_CONSTRAINT_FOREIGNKEY' || (err.message && err.message.includes('FOREIGN KEY constraint'))) {
     return error(res, 'Data referensi tidak ditemukan.', 400);
   }
 
@@ -29,9 +29,14 @@ const errorHandler = (err, req, res, _next) => {
     return error(res, 'Format request body tidak valid.', 400);
   }
 
+  // Custom error dengan statusCode
+  if (err.statusCode) {
+    return error(res, err.message, err.statusCode);
+  }
+
   // Default error
-  const statusCode = err.statusCode || 500;
-  const message = err.statusCode ? err.message : 'Terjadi kesalahan pada server.';
+  const statusCode = 500;
+  const message = 'Terjadi kesalahan pada server.';
 
   return error(res, message, statusCode);
 };

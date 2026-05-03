@@ -1,108 +1,106 @@
 // ============================================
-// CashierNova — User Model
+// CashierNova — User Model (sql.js)
 // Operasi database untuk tabel users
-// Dependencies: config/db
+// Dependencies: config/db (sql.js)
 // ============================================
 
-const { pool } = require('../config/db');
+const { getDb, saveDatabase } = require('../config/db');
+
+// Helper: jalankan SELECT dan return array of objects
+const queryAll = (sql, params = []) => {
+  const db = getDb();
+  const stmt = db.prepare(sql);
+  stmt.bind(params);
+  const rows = [];
+  while (stmt.step()) {
+    rows.push(stmt.getAsObject());
+  }
+  stmt.free();
+  return rows;
+};
+
+// Helper: jalankan SELECT dan return satu object
+const queryOne = (sql, params = []) => {
+  const db = getDb();
+  const stmt = db.prepare(sql);
+  stmt.bind(params);
+  let row = null;
+  if (stmt.step()) {
+    row = stmt.getAsObject();
+  }
+  stmt.free();
+  return row;
+};
+
+// Helper: jalankan INSERT/UPDATE/DELETE
+const execute = (sql, params = []) => {
+  const db = getDb();
+  db.run(sql, params);
+  saveDatabase();
+};
 
 const userModel = {
-  /**
-   * Mengambil semua user (tanpa soft deleted)
-   */
   findAll: async () => {
-    const [rows] = await pool.query(
+    return queryAll(
       'SELECT id, name, email, role, created_at, updated_at FROM users WHERE deleted_at IS NULL ORDER BY created_at DESC'
     );
-    return rows;
   },
 
-  /**
-   * Mencari user berdasarkan ID
-   */
   findById: async (id) => {
-    const [rows] = await pool.query(
+    return queryOne(
       'SELECT id, name, email, role, created_at, updated_at FROM users WHERE id = ? AND deleted_at IS NULL',
       [id]
     );
-    return rows[0] || null;
   },
 
-  /**
-   * Mencari user berdasarkan email (termasuk password untuk auth)
-   */
   findByEmail: async (email) => {
-    const [rows] = await pool.query(
+    return queryOne(
       'SELECT * FROM users WHERE email = ? AND deleted_at IS NULL',
       [email]
     );
-    return rows[0] || null;
   },
 
-  /**
-   * Membuat user baru
-   */
   create: async (data) => {
     const { name, email, password, role } = data;
-    const [result] = await pool.query(
+    const db = getDb();
+    db.run(
       'INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)',
       [name, email, password, role || 'kasir']
     );
-    return { id: result.insertId, name, email, role: role || 'kasir' };
+    const lastId = db.exec('SELECT last_insert_rowid() as id')[0].values[0][0];
+    saveDatabase();
+    return { id: lastId, name, email, role: role || 'kasir' };
   },
 
-  /**
-   * Mengupdate data user
-   */
   update: async (id, data) => {
     const fields = [];
     const values = [];
-
     if (data.name) { fields.push('name = ?'); values.push(data.name); }
     if (data.email) { fields.push('email = ?'); values.push(data.email); }
     if (data.password) { fields.push('password = ?'); values.push(data.password); }
     if (data.role) { fields.push('role = ?'); values.push(data.role); }
-
     if (fields.length === 0) return null;
 
+    fields.push("updated_at = datetime('now')");
     values.push(id);
-    const [result] = await pool.query(
-      `UPDATE users SET ${fields.join(', ')} WHERE id = ? AND deleted_at IS NULL`,
-      values
-    );
-    return result.affectedRows > 0;
+    execute(`UPDATE users SET ${fields.join(', ')} WHERE id = ? AND deleted_at IS NULL`, values);
+    return true;
   },
 
-  /**
-   * Soft delete user
-   */
   delete: async (id) => {
-    const [result] = await pool.query(
-      'UPDATE users SET deleted_at = NOW() WHERE id = ? AND deleted_at IS NULL',
-      [id]
-    );
-    return result.affectedRows > 0;
+    execute("UPDATE users SET deleted_at = datetime('now') WHERE id = ? AND deleted_at IS NULL", [id]);
+    return true;
   },
 
-  /**
-   * Menyimpan refresh token
-   */
   updateRefreshToken: async (id, refreshToken) => {
-    await pool.query(
-      'UPDATE users SET refresh_token = ? WHERE id = ?',
-      [refreshToken, id]
-    );
+    execute('UPDATE users SET refresh_token = ? WHERE id = ?', [refreshToken, id]);
   },
 
-  /**
-   * Mencari user berdasarkan refresh token
-   */
   findByRefreshToken: async (refreshToken) => {
-    const [rows] = await pool.query(
+    return queryOne(
       'SELECT id, name, email, role FROM users WHERE refresh_token = ? AND deleted_at IS NULL',
       [refreshToken]
     );
-    return rows[0] || null;
   },
 };
 

@@ -10,9 +10,7 @@ const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 
 const env = require('./src/config/env');
-const { testConnection } = require('./src/config/db');
-const routes = require('./src/routes');
-const errorHandler = require('./src/middlewares/errorHandler');
+const { initConnection } = require('./src/config/db');
 const logger = require('./src/utils/logger');
 
 const app = express();
@@ -48,24 +46,31 @@ app.get('/api/health', (req, res) => {
   res.json({ success: true, message: 'CashierNova API berjalan normal.', timestamp: new Date() });
 });
 
-// ---- API Routes ----
-app.use('/api', routes);
-
-// ---- 404 Handler ----
-app.use((req, res) => {
-  res.status(404).json({
-    success: false,
-    message: `Endpoint ${req.method} ${req.originalUrl} tidak ditemukan.`,
-  });
-});
-
-// ---- Global Error Handler ----
-app.use(errorHandler);
-
 // ---- Start Server ----
 const startServer = async () => {
-  // Test koneksi database
-  await testConnection();
+  // Inisialisasi database SQLite (async karena sql.js memuat WASM)
+  await initConnection();
+
+  // Inisialisasi tabel dan seed data
+  const initDatabase = require('./src/config/initDb');
+  initDatabase();
+
+  // Muat routes setelah DB siap
+  const routes = require('./src/routes');
+  const errorHandler = require('./src/middlewares/errorHandler');
+
+  app.use('/api', routes);
+
+  // ---- 404 Handler ----
+  app.use((req, res) => {
+    res.status(404).json({
+      success: false,
+      message: `Endpoint ${req.method} ${req.originalUrl} tidak ditemukan.`,
+    });
+  });
+
+  // ---- Global Error Handler ----
+  app.use(errorHandler);
 
   app.listen(env.PORT, () => {
     logger.info(`🚀 CashierNova API berjalan di http://localhost:${env.PORT}`);

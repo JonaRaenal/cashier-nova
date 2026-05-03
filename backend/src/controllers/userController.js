@@ -4,7 +4,7 @@
 // Dependencies: bcrypt, userModel
 // ============================================
 
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const userModel = require('../models/userModel');
 const { success, error } = require('../utils/response');
 
