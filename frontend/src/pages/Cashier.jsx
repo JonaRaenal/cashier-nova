@@ -21,6 +21,7 @@ import formatDate from '../utils/formatDate';
 import Modal from '../components/ui/Modal';
 import LoadingSpinner from '../components/shared/LoadingSpinner';
 import toast from 'react-hot-toast';
+import useNotificationStore from '../store/notificationStore';
 
 const TAX_RATE = Number(import.meta.env.VITE_TAX_RATE) || 11;
 
@@ -42,6 +43,7 @@ const Cashier = () => {
   const [paymentMethod, setPaymentMethod] = useState('cash');
   const [showPayment, setShowPayment] = useState(false);
   const [processing, setProcessing] = useState(false);
+  const addNotification = useNotificationStore((state) => state.addNotification);
 
   const [receipt, setReceipt] = useState(null);
   const [showReceipt, setShowReceipt] = useState(false);
@@ -106,6 +108,11 @@ const Cashier = () => {
       setPaymentAmount('');
       setActiveTab('products');
       toast.success('Transaksi berhasil!');
+      addNotification({
+        title: 'Transaksi Berhasil',
+        message: `Invoice ${response.data.data.invoice_number} sebesar ${formatCurrency(grandTotal)} berhasil.`,
+        type: 'success',
+      });
 
       const productsRes = await productService.getAll({ limit: 100 });
       setProducts(productsRes.data.data);
@@ -123,9 +130,9 @@ const Cashier = () => {
 
   // ======== PANEL PRODUK ========
   const ProductPanel = (
-    <div className="flex-1 flex flex-col overflow-hidden bg-background">
+    <div className="flex-1 flex flex-col overflow-hidden bg-background dark:bg-dark-900">
       {/* Search & Filter */}
-      <div className="p-4 bg-white border-b border-gray-100">
+      <div className="p-4 bg-white dark:bg-dark-800 border-b border-gray-100 dark:border-dark-700">
         <div className="flex items-center gap-3 mb-3">
           <div className="relative flex-1">
             <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -142,7 +149,7 @@ const Cashier = () => {
           <button
             onClick={() => setActiveCategory(null)}
             className={`px-4 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all duration-200 ${
-              !activeCategory ? 'bg-primary text-dark-900' : 'bg-gray-100 text-text-secondary hover:bg-gray-200'
+              !activeCategory ? 'bg-primary text-dark-900' : 'bg-gray-100 dark:bg-dark-700 text-text-secondary dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-dark-600'
             }`}
           >
             Semua
@@ -152,7 +159,7 @@ const Cashier = () => {
               key={cat.id}
               onClick={() => setActiveCategory(cat.id)}
               className={`px-4 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all duration-200 ${
-                activeCategory === cat.id ? 'bg-primary text-dark-900' : 'bg-gray-100 text-text-secondary hover:bg-gray-200'
+                activeCategory === cat.id ? 'bg-primary text-dark-900' : 'bg-gray-100 dark:bg-dark-700 text-text-secondary dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-dark-600'
               }`}
             >
               {cat.name}
@@ -168,7 +175,7 @@ const Cashier = () => {
             <LoadingSpinner size="lg" />
           </div>
         ) : products.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-40 text-text-secondary">
+          <div className="flex flex-col items-center justify-center h-40 text-text-secondary dark:text-gray-500">
             <Package size={40} className="mb-2 opacity-40" />
             <p className="text-sm">Produk tidak ditemukan</p>
           </div>
@@ -179,11 +186,11 @@ const Cashier = () => {
                 key={product.id}
                 onClick={() => handleAddToCart(product)}
                 disabled={product.stock <= 0}
-                className={`card text-left p-3 hover:shadow-card-hover transition-all duration-200 group relative ${
+                className={`card text-left p-3 hover:shadow-card-hover dark:hover:shadow-dark-card-hover transition-all duration-200 group relative ${
                   product.stock <= 0 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer active:scale-[0.98]'
                 }`}
               >
-                <div className="aspect-square rounded-lg overflow-hidden bg-gray-100 mb-3">
+                <div className="aspect-square rounded-lg overflow-hidden bg-gray-100 dark:bg-dark-700 mb-3">
                   <img
                     src={product.image_url || 'https://via.placeholder.com/200?text=No+Image'}
                     alt={product.name}
@@ -191,14 +198,14 @@ const Cashier = () => {
                     onError={(e) => { e.target.src = 'https://via.placeholder.com/200?text=No+Image'; }}
                   />
                 </div>
-                <h3 className="text-sm font-medium text-text-primary truncate">{product.name}</h3>
-                <p className="text-xs text-text-secondary mt-0.5">{product.category_name}</p>
+                <h3 className="text-sm font-medium text-text-primary dark:text-gray-100 truncate">{product.name}</h3>
+                <p className="text-xs text-text-secondary dark:text-gray-400 mt-0.5">{product.category_name}</p>
                 <div className="flex items-center justify-between mt-2">
                   <p className="text-sm font-bold text-primary">{formatCurrency(product.price)}</p>
                   <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${
-                    product.stock <= 0 ? 'bg-red-50 text-red-600'
-                    : product.stock <= 5 ? 'bg-amber-50 text-amber-600'
-                    : 'bg-emerald-50 text-emerald-600'
+                    product.stock <= 0 ? 'bg-red-50 text-red-600 dark:bg-red-900/30 dark:text-red-400'
+                    : product.stock <= 5 ? 'bg-amber-50 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400'
+                    : 'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400'
                   }`}>
                     {product.stock <= 0 ? 'Habis' : product.stock <= 5 ? `Sisa ${product.stock}` : `Stok ${product.stock}`}
                   </span>
@@ -220,13 +227,13 @@ const Cashier = () => {
 
   // ======== PANEL KERANJANG ========
   const CartPanel = (
-    <div className="w-full lg:w-[380px] bg-white border-l border-gray-100 flex flex-col h-full">
+    <div className="w-full lg:w-[380px] bg-white dark:bg-dark-800 border-l border-gray-100 dark:border-dark-700 flex flex-col h-full">
       {/* Cart header */}
-      <div className="p-4 border-b border-gray-100">
+      <div className="p-4 border-b border-gray-100 dark:border-dark-700">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <ShoppingBag size={20} className="text-primary" />
-            <h2 className="font-semibold text-text-primary">Keranjang</h2>
+            <h2 className="font-semibold text-text-primary dark:text-gray-100">Keranjang</h2>
             {items.length > 0 && (
               <span className="bg-primary text-dark-900 text-xs font-bold px-2 py-0.5 rounded-full">
                 {getItemCount()}
@@ -234,7 +241,7 @@ const Cashier = () => {
             )}
           </div>
           {items.length > 0 && (
-            <button onClick={clearCart} className="text-xs text-text-secondary hover:text-danger transition-colors">
+            <button onClick={clearCart} className="text-xs text-text-secondary dark:text-gray-400 hover:text-danger dark:hover:text-red-400 transition-colors">
               Kosongkan
             </button>
           )}
@@ -244,15 +251,15 @@ const Cashier = () => {
       {/* Cart items */}
       <div className="flex-1 overflow-y-auto p-4 space-y-3">
         {items.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-40 text-text-secondary">
+          <div className="flex flex-col items-center justify-center h-40 text-text-secondary dark:text-gray-500">
             <ShoppingBag size={36} className="mb-2 opacity-30" />
             <p className="text-sm">Keranjang kosong</p>
             <p className="text-xs mt-1">Klik produk untuk menambahkan</p>
           </div>
         ) : (
           items.map((item) => (
-            <div key={item.product_id} className="flex gap-3 p-3 bg-gray-50 rounded-xl animate-slide-in">
-              <div className="w-12 h-12 rounded-lg overflow-hidden bg-gray-200 flex-shrink-0">
+            <div key={item.product_id} className="flex gap-3 p-3 bg-gray-50 dark:bg-dark-700/50 rounded-xl animate-slide-in">
+              <div className="w-12 h-12 rounded-lg overflow-hidden bg-gray-200 dark:bg-dark-600 flex-shrink-0">
                 <img
                   src={item.image_url || 'https://via.placeholder.com/48'}
                   alt={item.product_name}
@@ -260,28 +267,28 @@ const Cashier = () => {
                 />
               </div>
               <div className="flex-1 min-w-0">
-                <h4 className="text-sm font-medium text-text-primary truncate">{item.product_name}</h4>
-                <p className="text-xs text-text-secondary">{formatCurrency(item.price)}</p>
+                <h4 className="text-sm font-medium text-text-primary dark:text-gray-100 truncate">{item.product_name}</h4>
+                <p className="text-xs text-text-secondary dark:text-gray-400">{formatCurrency(item.price)}</p>
                 <div className="flex items-center justify-between mt-2">
                   <div className="flex items-center gap-1">
                     <button
                       onClick={() => item.quantity <= 1 ? removeItem(item.product_id) : updateQty(item.product_id, item.quantity - 1)}
-                      className="w-7 h-7 rounded-md bg-white border border-gray-200 flex items-center justify-center hover:bg-gray-100 transition-colors"
+                      className="w-7 h-7 rounded-md bg-white dark:bg-dark-600 border border-gray-200 dark:border-dark-500 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-dark-500 transition-colors text-text-primary dark:text-gray-200"
                     >
                       <Minus size={12} />
                     </button>
-                    <span className="w-8 text-center text-sm font-medium">{item.quantity}</span>
+                    <span className="w-8 text-center text-sm font-medium text-text-primary dark:text-gray-100">{item.quantity}</span>
                     <button
                       onClick={() => updateQty(item.product_id, item.quantity + 1)}
                       disabled={item.quantity >= item.stock}
-                      className="w-7 h-7 rounded-md bg-white border border-gray-200 flex items-center justify-center hover:bg-gray-100 transition-colors disabled:opacity-40"
+                      className="w-7 h-7 rounded-md bg-white dark:bg-dark-600 border border-gray-200 dark:border-dark-500 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-dark-500 transition-colors disabled:opacity-40 text-text-primary dark:text-gray-200"
                     >
                       <Plus size={12} />
                     </button>
                   </div>
                   <div className="flex items-center gap-2">
-                    <p className="text-sm font-semibold text-text-primary">{formatCurrency(item.subtotal)}</p>
-                    <button onClick={() => removeItem(item.product_id)} className="p-1 text-gray-400 hover:text-danger transition-colors">
+                    <p className="text-sm font-semibold text-text-primary dark:text-gray-100">{formatCurrency(item.subtotal)}</p>
+                    <button onClick={() => removeItem(item.product_id)} className="p-1 text-gray-400 hover:text-danger dark:hover:text-red-400 transition-colors">
                       <Trash2 size={14} />
                     </button>
                   </div>
@@ -294,15 +301,15 @@ const Cashier = () => {
 
       {/* Summary & Checkout */}
       {items.length > 0 && (
-        <div className="border-t border-gray-100 p-4 space-y-3">
+        <div className="border-t border-gray-100 dark:border-dark-700 p-4 space-y-3">
           <div className="space-y-2 text-sm">
-            <div className="flex justify-between text-text-secondary">
+            <div className="flex justify-between text-text-secondary dark:text-gray-400">
               <span>Subtotal</span><span>{formatCurrency(subtotal)}</span>
             </div>
-            <div className="flex justify-between text-text-secondary">
+            <div className="flex justify-between text-text-secondary dark:text-gray-400">
               <span>Pajak ({TAX_RATE}%)</span><span>{formatCurrency(taxAmount)}</span>
             </div>
-            <div className="flex justify-between font-bold text-lg text-text-primary pt-2 border-t border-gray-100">
+            <div className="flex justify-between font-bold text-lg text-text-primary dark:text-gray-100 pt-2 border-t border-gray-100 dark:border-dark-700">
               <span>Total</span>
               <span className="text-primary">{formatCurrency(grandTotal)}</span>
             </div>
@@ -323,13 +330,13 @@ const Cashier = () => {
     <div className="animate-fade-in -m-4 md:-m-6">
 
       {/* ======== MOBILE/TABLET: Tab Bar ======== */}
-      <div className="flex lg:hidden border-b border-gray-100 bg-white sticky top-16 z-20">
+      <div className="flex lg:hidden border-b border-gray-100 dark:border-dark-700 bg-white dark:bg-dark-800 sticky top-16 z-20">
         <button
           onClick={() => setActiveTab('products')}
           className={`flex-1 py-3 text-sm font-medium transition-colors ${
             activeTab === 'products'
-              ? 'text-primary border-b-2 border-primary'
-              : 'text-text-secondary'
+              ? 'text-primary border-b-2 border-primary bg-primary/5'
+              : 'text-text-secondary dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-dark-700/50'
           }`}
         >
           Produk
@@ -338,8 +345,8 @@ const Cashier = () => {
           onClick={() => setActiveTab('cart')}
           className={`flex-1 py-3 text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
             activeTab === 'cart'
-              ? 'text-primary border-b-2 border-primary'
-              : 'text-text-secondary'
+              ? 'text-primary border-b-2 border-primary bg-primary/5'
+              : 'text-text-secondary dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-dark-700/50'
           }`}
         >
           Keranjang
@@ -376,13 +383,13 @@ const Cashier = () => {
       {/* ======== MODAL PEMBAYARAN ======== */}
       <Modal isOpen={showPayment} onClose={() => setShowPayment(false)} title="Pembayaran" size="md">
         <div className="space-y-5">
-          <div className="text-center p-4 bg-primary/5 rounded-xl">
-            <p className="text-sm text-text-secondary">Total Pembayaran</p>
+          <div className="text-center p-4 bg-primary/5 dark:bg-primary/10 rounded-xl">
+            <p className="text-sm text-text-secondary dark:text-gray-400">Total Pembayaran</p>
             <p className="text-3xl font-bold text-primary mt-1">{formatCurrency(grandTotal)}</p>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-text-primary mb-2">Metode Pembayaran</label>
+            <label className="block text-sm font-medium text-text-primary dark:text-gray-200 mb-2">Metode Pembayaran</label>
             <div className="grid grid-cols-4 gap-2">
               {['cash', 'debit', 'credit', 'qris'].map((method) => (
                 <button
@@ -391,7 +398,7 @@ const Cashier = () => {
                   className={`py-2 rounded-lg text-xs font-medium capitalize transition-all duration-200 ${
                     paymentMethod === method
                       ? 'bg-primary text-dark-900 ring-2 ring-primary/30'
-                      : 'bg-gray-100 text-text-secondary hover:bg-gray-200'
+                      : 'bg-gray-100 dark:bg-dark-700 text-text-secondary dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-dark-600'
                   }`}
                 >
                   {method === 'qris' ? 'QRIS' : method.charAt(0).toUpperCase() + method.slice(1)}
@@ -401,7 +408,7 @@ const Cashier = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-text-primary mb-2">Nominal Bayar</label>
+            <label className="block text-sm font-medium text-text-primary dark:text-gray-200 mb-2">Nominal Bayar</label>
             <input
               type="number"
               placeholder="Masukkan nominal"
@@ -412,7 +419,7 @@ const Cashier = () => {
             <div className="flex gap-2 mt-2 flex-wrap">
               <button
                 onClick={() => setPaymentAmount(String(grandTotal))}
-                className="px-3 py-1.5 bg-primary/10 text-primary text-xs font-medium rounded-lg hover:bg-primary/20 transition-colors"
+                className="px-3 py-1.5 bg-primary/10 dark:bg-primary/20 text-primary text-xs font-medium rounded-lg hover:bg-primary/20 dark:hover:bg-primary/30 transition-colors"
               >
                 Uang Pas
               </button>
@@ -420,7 +427,7 @@ const Cashier = () => {
                 <button
                   key={amount}
                   onClick={() => setPaymentAmount(String(amount))}
-                  className="px-3 py-1.5 bg-gray-100 text-text-secondary text-xs font-medium rounded-lg hover:bg-gray-200 transition-colors"
+                  className="px-3 py-1.5 bg-gray-100 dark:bg-dark-700 text-text-secondary dark:text-gray-300 text-xs font-medium rounded-lg hover:bg-gray-200 dark:hover:bg-dark-600 transition-colors"
                 >
                   {formatCurrency(amount)}
                 </button>
@@ -429,12 +436,12 @@ const Cashier = () => {
           </div>
 
           {Number(paymentAmount) > 0 && (
-            <div className={`p-3 rounded-lg ${changeAmount >= 0 ? 'bg-emerald-50' : 'bg-red-50'}`}>
+            <div className={`p-3 rounded-lg ${changeAmount >= 0 ? 'bg-emerald-50 dark:bg-emerald-900/20' : 'bg-red-50 dark:bg-red-900/20'}`}>
               <div className="flex justify-between items-center">
-                <span className={`text-sm font-medium ${changeAmount >= 0 ? 'text-emerald-700' : 'text-red-700'}`}>
+                <span className={`text-sm font-medium ${changeAmount >= 0 ? 'text-emerald-700 dark:text-emerald-400' : 'text-red-700 dark:text-red-400'}`}>
                   {changeAmount >= 0 ? 'Kembalian' : 'Kekurangan'}
                 </span>
-                <span className={`text-lg font-bold ${changeAmount >= 0 ? 'text-emerald-700' : 'text-red-700'}`}>
+                <span className={`text-lg font-bold ${changeAmount >= 0 ? 'text-emerald-700 dark:text-emerald-400' : 'text-red-700 dark:text-red-400'}`}>
                   {formatCurrency(Math.abs(changeAmount))}
                 </span>
               </div>

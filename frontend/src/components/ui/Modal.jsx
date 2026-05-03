@@ -1,9 +1,9 @@
 // ============================================
 // CashierNova — Modal Component
-// Komponen modal yang reusable dengan animasi
+// Komponen modal yang reusable dengan animasi + dark mode
 // ============================================
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
 
 const Modal = ({ isOpen, onClose, title, children, size = 'md', showClose = true }) => {
@@ -15,7 +15,9 @@ const Modal = ({ isOpen, onClose, title, children, size = 'md', showClose = true
     full: 'max-w-6xl',
   };
 
-  // Tutup modal dengan Escape
+  const modalRef = useRef(null);
+
+  // Tutup modal dengan Escape + focus trap
   useEffect(() => {
     const handleEscape = (e) => {
       if (e.key === 'Escape') onClose();
@@ -23,6 +25,8 @@ const Modal = ({ isOpen, onClose, title, children, size = 'md', showClose = true
     if (isOpen) {
       document.addEventListener('keydown', handleEscape);
       document.body.style.overflow = 'hidden';
+      // Focus modal saat dibuka
+      modalRef.current?.focus();
     }
     return () => {
       document.removeEventListener('keydown', handleEscape);
@@ -36,25 +40,33 @@ const Modal = ({ isOpen, onClose, title, children, size = 'md', showClose = true
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in"
       onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby={title ? 'modal-title' : undefined}
     >
       {/* Backdrop */}
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
 
       {/* Modal content */}
       <div
-        className={`relative w-full ${sizes[size]} bg-white rounded-xl shadow-modal animate-scale-in max-h-[90vh] flex flex-col`}
+        ref={modalRef}
+        tabIndex={-1}
+        className={`relative w-full ${sizes[size]} bg-white dark:bg-dark-800 rounded-xl shadow-modal animate-scale-in max-h-[90vh] flex flex-col`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         {title && (
-          <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-            <h2 className="text-lg font-semibold text-text-primary">{title}</h2>
+          <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-dark-700">
+            <h2 id="modal-title" className="text-lg font-semibold text-text-primary dark:text-gray-100">
+              {title}
+            </h2>
             {showClose && (
               <button
                 onClick={onClose}
-                className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors"
+                className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 transition-colors"
+                aria-label="Close modal"
               >
-                <X size={18} className="text-text-secondary" />
+                <X size={18} className="text-text-secondary dark:text-gray-400" />
               </button>
             )}
           </div>

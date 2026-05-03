@@ -1,6 +1,6 @@
 // ============================================
 // CashierNova — Main Layout
-// Layout utama dengan sidebar dan navbar
+// Layout utama dengan sidebar dan navbar + dark mode
 // Dependencies: react-router-dom, Sidebar, Navbar
 // ============================================
 
@@ -26,10 +26,13 @@ const MainLayout = () => {
   const title = pageTitles[location.pathname] || 'CashierNova';
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background dark:bg-dark-950 transition-colors duration-300">
       {/* Mobile Overlay */}
       {mobileOpen && (
-        <div className="fixed inset-0 bg-black/50 z-30 lg:hidden" onClick={() => setMobileOpen(false)} />
+        <div
+          className="fixed inset-0 bg-black/50 z-30 lg:hidden"
+          onClick={() => setMobileOpen(false)}
+        />
       )}
       <Sidebar
         collapsed={sidebarCollapsed}
@@ -39,13 +42,13 @@ const MainLayout = () => {
       />
 
       <div
-        className={`transition-all duration-300 ml-0 ${
-          sidebarCollapsed ? 'ml-[72px]' : 'ml-[260px]'
+        className={`transition-all duration-300 ${
+          sidebarCollapsed ? 'lg:ml-[72px]' : 'lg:ml-[260px]'
         }`}
       >
         <Navbar title={title} onMobileMenuClick={() => setMobileOpen(true)} />
 
-        <main className="p-6">
+        <main className="p-4 md:p-6">
           <Outlet />
         </main>
       </div>

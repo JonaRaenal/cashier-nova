@@ -5,7 +5,6 @@
 // ============================================
 
 import { Outlet, Navigate } from 'react-router-dom';
-import { Zap } from 'lucide-react';
 import useAuthStore from '../store/authStore';
 
 const AuthLayout = () => {
@@ -24,8 +23,8 @@ const AuthLayout = () => {
         <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-dark-900 to-dark-900" />
         
         {/* Decorative circles */}
-        <div className="absolute top-20 left-20 w-72 h-72 bg-primary/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-20 right-20 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
+        <div className="absolute top-20 left-20 w-72 h-72 bg-primary/10 rounded-full blur-3xl animate-pulse-soft" />
+        <div className="absolute bottom-20 right-20 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-pulse-soft" style={{ animationDelay: '1s' }} />
 
         <div className="relative z-10 text-center px-12">
           <div className="w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-8">

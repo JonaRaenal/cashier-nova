@@ -1,45 +1,66 @@
 // ============================================
 // CashierNova — App Root Component
-// Routing utama aplikasi dengan route guards
-// Dependencies: react-router-dom
+// Routing utama aplikasi dengan route guards + dark mode init
+// Dependencies: react-router-dom, react.lazy
 // ============================================
 
+import { lazy, Suspense, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
+import useThemeStore from './store/themeStore';
 
 // Layouts
 import AuthLayout from './layouts/AuthLayout';
 import MainLayout from './layouts/MainLayout';
 
-// Pages
-import Login from './pages/Login';
-import Dashboard from './pages/Dashboard';
-import Cashier from './pages/Cashier';
-import Products from './pages/Products';
-import Transactions from './pages/Transactions';
-import Users from './pages/Users';
-
 // Route Guards
 import PrivateRoute from './routes/PrivateRoute';
 import RoleRoute from './routes/RoleRoute';
 
+// Error Boundary
+import ErrorBoundary from './components/shared/ErrorBoundary';
+import LoadingSpinner from './components/shared/LoadingSpinner';
+
+// Lazy-loaded Pages (code splitting)
+const Login = lazy(() => import('./pages/Login'));
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const Cashier = lazy(() => import('./pages/Cashier'));
+const Products = lazy(() => import('./pages/Products'));
+const Transactions = lazy(() => import('./pages/Transactions'));
+const Users = lazy(() => import('./pages/Users'));
+
+// Page loading fallback
+const PageLoader = () => (
+  <div className="flex items-center justify-center h-[60vh]">
+    <LoadingSpinner size="lg" />
+  </div>
+);
+
 function App() {
+  const { theme, initTheme } = useThemeStore();
+
+  // Inisialisasi tema saat app mount
+  useEffect(() => {
+    initTheme();
+  }, [initTheme]);
+
   return (
     <BrowserRouter>
-      {/* Toast Notifications */}
+      {/* Toast Notifications — theme-aware */}
       <Toaster
         position="top-right"
         toastOptions={{
           duration: 3000,
           style: {
-            background: '#1a1f2e',
+            background: theme === 'dark' ? '#1e2235' : '#1a1f2e',
             color: '#fff',
             fontSize: '14px',
             borderRadius: '8px',
             padding: '12px 16px',
+            border: theme === 'dark' ? '1px solid rgba(255,255,255,0.1)' : 'none',
           },
           success: {
-            iconTheme: { primary: '#2dd8a3', secondary: '#1a1f2e' },
+            iconTheme: { primary: '#2dd8a3', secondary: theme === 'dark' ? '#1e2235' : '#1a1f2e' },
           },
           error: {
             iconTheme: { primary: '#ef4444', secondary: '#fff' },
@@ -47,32 +68,68 @@ function App() {
         }}
       />
 
-      <Routes>
-        {/* Auth Routes (Public) */}
-        <Route element={<AuthLayout />}>
-          <Route path="/login" element={<Login />} />
-        </Route>
+      <ErrorBoundary>
+        <Routes>
+          {/* Auth Routes (Public) */}
+          <Route element={<AuthLayout />}>
+            <Route path="/login" element={
+              <Suspense fallback={<PageLoader />}>
+                <Login />
+              </Suspense>
+            } />
+          </Route>
 
-        {/* Protected Routes */}
-        <Route element={<PrivateRoute />}>
-          <Route element={<MainLayout />}>
-            {/* Semua role */}
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/cashier" element={<Cashier />} />
-            <Route path="/transactions" element={<Transactions />} />
+          {/* Protected Routes */}
+          <Route element={<PrivateRoute />}>
+            <Route element={<MainLayout />}>
+              {/* Semua role */}
+              <Route path="/dashboard" element={
+                <Suspense fallback={<PageLoader />}>
+                  <ErrorBoundary message="Dashboard mengalami error.">
+                    <Dashboard />
+                  </ErrorBoundary>
+                </Suspense>
+              } />
+              <Route path="/cashier" element={
+                <Suspense fallback={<PageLoader />}>
+                  <ErrorBoundary message="Halaman kasir mengalami error.">
+                    <Cashier />
+                  </ErrorBoundary>
+                </Suspense>
+              } />
+              <Route path="/transactions" element={
+                <Suspense fallback={<PageLoader />}>
+                  <ErrorBoundary message="Halaman transaksi mengalami error.">
+                    <Transactions />
+                  </ErrorBoundary>
+                </Suspense>
+              } />
 
-            {/* Admin only */}
-            <Route element={<RoleRoute roles={['admin']} />}>
-              <Route path="/products" element={<Products />} />
-              <Route path="/users" element={<Users />} />
+              {/* Admin only */}
+              <Route element={<RoleRoute roles={['admin']} />}>
+                <Route path="/products" element={
+                  <Suspense fallback={<PageLoader />}>
+                    <ErrorBoundary message="Halaman produk mengalami error.">
+                      <Products />
+                    </ErrorBoundary>
+                  </Suspense>
+                } />
+                <Route path="/users" element={
+                  <Suspense fallback={<PageLoader />}>
+                    <ErrorBoundary message="Halaman pengguna mengalami error.">
+                      <Users />
+                    </ErrorBoundary>
+                  </Suspense>
+                } />
+              </Route>
             </Route>
           </Route>
-        </Route>
 
-        {/* Default redirect */}
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
-        <Route path="*" element={<Navigate to="/dashboard" replace />} />
-      </Routes>
+          {/* Default redirect */}
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        </Routes>
+      </ErrorBoundary>
     </BrowserRouter>
   );
 }
