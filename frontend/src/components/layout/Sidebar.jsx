@@ -13,11 +13,11 @@ import {
   Users,
   LogOut,
   ChevronLeft,
-  Zap,
+  X,
 } from 'lucide-react';
 import useAuthStore from '../../store/authStore';
 
-const Sidebar = ({ collapsed, onToggle }) => {
+const Sidebar = ({ collapsed, onToggle, mobileOpen, onMobileClose }) => {
   const { user, logout } = useAuthStore();
   const isAdmin = user?.role === 'admin';
 
@@ -33,18 +33,24 @@ const Sidebar = ({ collapsed, onToggle }) => {
 
   return (
     <aside
-      className={`fixed left-0 top-0 h-screen bg-dark-900 text-white z-40 transition-all duration-300 flex flex-col ${
-        collapsed ? 'w-[72px]' : 'w-[260px]'
-      }`}
+      className={`fixed left-0 top-0 h-screen bg-dark-900 text-white z-40 transition-all duration-300 flex flex-col
+        /* Buat Mobile dan Tablet */
+        ${mobileOpen ? 'translate-x-0' : '-translate-x-full'} w-[260px]
+        /* Buat Desktop */
+        lg:translate-x-0 ${collapsed ? 'w-[72px]' : 'w-[260px]'}
+      `}
     >
       {/* Logo */}
       <div className="flex items-center gap-3 px-5 h-16 border-b border-white/10">
-        <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center flex-shrink-0">
-          <Zap size={18} className="text-dark-900" />
+        <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0">
+          <img src="/logo.svg" alt="CashierNova Logo" className="w-full h-full object-contain" />
         </div>
-        {!collapsed && (
-          <span className="text-lg font-bold tracking-tight">CashierNova</span>
-        )}
+        {/* Mobile cuma tampilin nama */}
+        <span className={`text-lg font-bold tracking-tight lg:${collapsed ? 'hidden' : 'block'}`}>CashierNova</span>
+        {/* Tombol close untuk mobile */}
+        <button onClick={onMobileClose} className="ml-auto p-1 rounded-lg hover:bg-white/10 lg:hidden">
+          <X size={18} className="text-gray-400" />
+        </button>
       </div>
 
       {/* Menu */}
@@ -53,6 +59,7 @@ const Sidebar = ({ collapsed, onToggle }) => {
           <NavLink
             key={item.path}
             to={item.path}
+            onClick={onMobileClose}
             className={({ isActive }) =>
               `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 group ${
                 isActive
@@ -62,19 +69,17 @@ const Sidebar = ({ collapsed, onToggle }) => {
             }
           >
             <item.icon size={20} className="flex-shrink-0" />
-            {!collapsed && <span>{item.label}</span>}
+            <span className={`lg:${collapsed ? 'hidden' : 'block'}`}>{item.label}</span>
           </NavLink>
         ))}
       </nav>
 
       {/* User info + Logout */}
       <div className="p-3 border-t border-white/10">
-        {!collapsed && (
-          <div className="px-3 py-2 mb-2">
+          <div className={`px-3 py-2 mb-2 lg:${collapsed ? 'hidden' : 'block'}`}>
             <p className="text-sm font-medium text-white truncate">{user?.name}</p>
             <p className="text-xs text-gray-500 capitalize">{user?.role}</p>
           </div>
-        )}
         <button
           onClick={logout}
           className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:text-red-400 hover:bg-red-400/10 transition-all duration-200 ${
@@ -82,14 +87,14 @@ const Sidebar = ({ collapsed, onToggle }) => {
           }`}
         >
           <LogOut size={20} />
-          {!collapsed && <span>Keluar</span>}
+            <span className={`lg:${collapsed ? 'hidden' : 'block'}`}>Keluar</span>
         </button>
       </div>
 
-      {/* Toggle button */}
+      {/* Toggle button desktop */}
       <button
         onClick={onToggle}
-        className="absolute -right-3 top-20 w-6 h-6 bg-dark-900 border border-white/20 rounded-full flex items-center justify-center hover:bg-dark-800 transition-colors"
+        className="hidden lg:flex absolute -right-3 top-20 w-6 h-6 bg-dark-900 border border-white/20 rounded-full flex items-center justify-center hover:bg-dark-800 transition-colors"
       >
         <ChevronLeft
           size={14}

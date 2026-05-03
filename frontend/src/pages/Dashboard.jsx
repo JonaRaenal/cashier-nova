@@ -35,6 +35,8 @@ const Dashboard = () => {
   const [chartRange, setChartRange] = useState(7);
   const [loading, setLoading] = useState(true);
 
+  const isMobile = window.innerWidth < 640;
+
   // Fetch data dashboard
   useEffect(() => {
     const fetchDashboard = async () => {
@@ -149,7 +151,7 @@ const Dashboard = () => {
             </div>
           </div>
 
-          <ResponsiveContainer width="100%" height={280}>
+          <ResponsiveContainer width="100%" height={isMobile ? 200 : 280}>
             <AreaChart data={chartData}>
               <defs>
                 <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
@@ -167,6 +169,7 @@ const Dashboard = () => {
                 }}
               />
               <YAxis
+                hide={isMobile}
                 tick={{ fontSize: 11, fill: '#64748b' }}
                 tickFormatter={(val) => `${(val / 1000).toFixed(0)}k`}
               />
@@ -187,6 +190,8 @@ const Dashboard = () => {
                 stroke="#2dd8a3"
                 strokeWidth={2.5}
                 fill="url(#colorSales)"
+                dot={{ fill: '#2dd8a3', strokeWidth: 2, r: 4 }}
+                activeDot={{ r: 6, fill: '#2dd8a3' }}
               />
             </AreaChart>
           </ResponsiveContainer>

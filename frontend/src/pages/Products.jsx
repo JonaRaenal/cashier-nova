@@ -182,53 +182,59 @@ const Products = () => {
             <p>Tidak ada produk ditemukan</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr>
-                  <th className="table-header">Produk</th>
-                  <th className="table-header">SKU</th>
-                  <th className="table-header">Kategori</th>
-                  <th className="table-header">Harga</th>
-                  <th className="table-header">Stok</th>
-                  <th className="table-header text-right">Aksi</th>
-                </tr>
-              </thead>
-              <tbody>
-                {products.map((product) => (
-                  <tr key={product.id} className="hover:bg-gray-50/50 transition-colors">
-                    <td className="table-cell">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
-                          {product.image_url ? (
-                            <img src={product.image_url} alt={product.name} className="w-full h-full object-cover" />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center">
-                              <ImageIcon size={16} className="text-gray-400" />
-                            </div>
-                          )}
-                        </div>
-                        <span className="font-medium">{product.name}</span>
-                      </div>
-                    </td>
-                    <td className="table-cell text-text-secondary">{product.sku || '-'}</td>
-                    <td className="table-cell text-text-secondary">{product.category_name}</td>
-                    <td className="table-cell font-medium">{formatCurrency(product.price)}</td>
-                    <td className="table-cell"><StockBadge stock={product.stock} /></td>
-                    <td className="table-cell text-right">
-                      <div className="flex items-center justify-end gap-1">
-                        <button onClick={() => openModal(product)} className="btn-ghost p-2">
-                          <Edit2 size={15} className="text-text-secondary" />
-                        </button>
-                        <button onClick={() => setDeleteTarget(product)} className="btn-ghost p-2">
-                          <Trash2 size={15} className="text-danger" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 p-4">
+            {products.map((product) => (
+              <div
+                key={product.id}
+                className="card p-3 hover:shadow-card-hover transition-all duration-200 group relative flex flex-col"
+              >
+                {/* Gambar */}
+                <div className="aspect-square rounded-lg overflow-hidden bg-gray-100 mb-3">
+                  {product.image_url ? (
+                    <img
+                      src={product.image_url}
+                      alt={product.name}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      onError={(e) => { e.target.src = 'https://via.placeholder.com/200?text=No+Image'; }}
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <ImageIcon size={32} className="text-gray-300" />
+                    </div>
+                  )}
+                </div>
+
+                {/* Info */}
+                <div className="flex-1">
+                  <h3 className="text-sm font-medium text-text-primary truncate">{product.name}</h3>
+                  <p className="text-xs text-text-secondary mt-0.5">{product.category_name}</p>
+                  {product.sku && (
+                    <p className="text-xs text-gray-400 mt-0.5">{product.sku}</p>
+                  )}
+                  <div className="mt-2">
+                    <StockBadge stock={product.stock} />
+                  </div>
+                </div>
+
+                {/* Tombol Aksi */}
+                <div className="flex gap-2 mt-3 pt-3 border-t border-gray-100">
+                  <button
+                    onClick={() => openModal(product)}
+                    className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-medium bg-gray-100 text-text-secondary hover:bg-primary/10 hover:text-primary transition-all duration-200"
+                  >
+                    <Edit2 size={13} />
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => setDeleteTarget(product)}
+                    className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-medium bg-gray-100 text-text-secondary hover:bg-red-50 hover:text-danger transition-all duration-200"
+                  >
+                    <Trash2 size={13} />
+                    Hapus
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
         )}
 

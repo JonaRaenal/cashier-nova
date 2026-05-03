@@ -50,8 +50,8 @@ const Login = () => {
     <div className="animate-slide-in">
       {/* Mobile logo */}
       <div className="lg:hidden flex items-center gap-3 mb-8">
-        <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
-          <Zap size={22} className="text-dark-900" />
+        <div className="w-10 h-10 rounded-xl flex items-center justify-center">
+          <img src="/logo.svg" alt="CashierNova Logo" className="w-full h-full object-contain" />
         </div>
         <span className="text-xl font-bold text-white">CashierNova</span>
       </div>
@@ -130,12 +130,6 @@ const Login = () => {
         </button>
       </form>
 
-      {/* Demo credentials */}
-      <div className="mt-8 p-4 bg-white/5 rounded-lg border border-white/10">
-        <p className="text-xs font-medium text-gray-400 mb-2">Demo Login:</p>
-        <p className="text-xs text-gray-500">Email: admin@cashiernova.com</p>
-        <p className="text-xs text-gray-500">Password: admin123</p>
-      </div>
     </div>
   );
 };

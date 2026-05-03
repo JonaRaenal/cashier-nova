@@ -28,8 +28,8 @@ const AuthLayout = () => {
         <div className="absolute bottom-20 right-20 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
 
         <div className="relative z-10 text-center px-12">
-          <div className="w-20 h-20 bg-primary rounded-2xl flex items-center justify-center mx-auto mb-8 shadow-lg shadow-primary/25">
-            <Zap size={40} className="text-dark-900" />
+          <div className="w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-8">
+            <img src="/logo.svg" alt="CashierNova Logo" className="w-full h-full object-contain" />
           </div>
           <h1 className="text-4xl font-bold text-white mb-4">CashierNova</h1>
           <p className="text-lg text-gray-400 max-w-md">

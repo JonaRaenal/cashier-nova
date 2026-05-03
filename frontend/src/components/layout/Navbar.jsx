@@ -4,21 +4,24 @@
 // Dependencies: lucide-react
 // ============================================
 
-import { Bell, Search } from 'lucide-react';
+import { Bell, Menu } from 'lucide-react';
 import useAuthStore from '../../store/authStore';
 
-const Navbar = ({ title }) => {
+const Navbar = ({ title, onMobileMenuClick }) => {
   const user = useAuthStore((state) => state.user);
 
   return (
     <header className="h-16 bg-white border-b border-gray-100 flex items-center justify-between px-6 sticky top-0 z-30">
-      {/* Page title */}
-      <div>
+      {/* Muncul Hamburger */}
+      <div className="flex items-center gap-3">
+        <button onClick={onMobileMenuClick} className="lg:hidden p-2 rounded-lg hover:bg-gray-50 transition-colors">
+          <Menu size={20} className="text-text-secondary" />
+        </button>
         <h1 className="text-lg font-semibold text-text-primary">{title}</h1>
       </div>
 
       {/* Right side */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3">
         {/* Notifications */}
         <button className="relative p-2 rounded-lg hover:bg-gray-50 transition-colors">
           <Bell size={20} className="text-text-secondary" />

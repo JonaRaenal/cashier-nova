@@ -53,16 +53,65 @@ const Transactions = () => {
 
   const exportCSV = () => {
     if (transactions.length === 0) { toast.error('Tidak ada data'); return; }
-    const headers = ['No', 'Invoice', 'Kasir', 'Total', 'Metode', 'Tanggal'];
+
+    const now = new Date();
+    const exportDate = formatDate(now);
+
+    // Header info
+    const infoRows = [
+      ['CashierNova — Laporan Transaksi'],
+      [`Diekspor pada: ${exportDate}`],
+      [`Filter: ${startDate && endDate ? `${startDate} s/d ${endDate}` : startDate ? `Dari ${startDate}` : endDate ? `Sampai ${endDate}` : 'Semua tanggal'}`],
+      [`Total data: ${meta.total} transaksi`],
+      [''],
+    ];
+
+    // Header kolom
+    const headers = ['No', 'Invoice', 'Kasir', 'Total', 'Dibayar', 'Kembalian', 'Metode', 'Tanggal'];
+
+    // Rows data
     const rows = transactions.map((tx, i) => [
-      i + 1, tx.invoice_number, tx.cashier_name, tx.grand_total, tx.payment_method, formatDate(tx.created_at),
+      i + 1,
+      tx.invoice_number,
+      tx.cashier_name,
+      formatCurrency(tx.grand_total),
+      formatCurrency(tx.payment_amount),
+      formatCurrency(tx.change_amount),
+      tx.payment_method.toUpperCase(),
+      formatDate(tx.created_at),
     ]);
-    const csv = [headers, ...rows].map((r) => r.join(',')).join('\n');
-    const blob = new Blob([csv], { type: 'text/csv' });
+
+    // Baris total
+    const totalRow = [
+      '',
+      '',
+      'TOTAL',
+      formatCurrency(transactions.reduce((sum, tx) => sum + Number(tx.grand_total), 0)),
+      '',
+      '',
+      '',
+      '',
+    ];
+
+    // Gabungkan semua
+    const allRows = [
+      ...infoRows,
+      headers,
+      ...rows,
+      [''],
+      totalRow,
+    ];
+
+    // Konversi ke CSV dengan tab sebagai separator biar rapi di Excel/spreadsheet
+    const csv = '\uFEFF' + allRows
+      .map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+      .join('\n');
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `transaksi-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.download = `transaksi-cashiernova-${now.toISOString().slice(0, 10)}.csv`;
     a.click();
     URL.revokeObjectURL(url);
     toast.success('CSV berhasil diunduh');
@@ -70,23 +119,23 @@ const Transactions = () => {
 
   return (
     <div className="space-y-5 animate-fade-in">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold text-text-primary">Riwayat Transaksi</h1>
           <p className="text-text-secondary mt-1">Lihat seluruh riwayat transaksi penjualan</p>
         </div>
-        <button onClick={exportCSV} className="btn-secondary flex items-center gap-2">
+        <button onClick={exportCSV} className="btn-secondary flex items-center gap-2 w-full sm:w-auto justify-center">
           <Download size={16} /> Export CSV
         </button>
       </div>
 
       <div className="card">
         <div className="flex flex-col sm:flex-row gap-3 items-end">
-          <div className="flex-1">
+          <div className="w-full sm:flex-1">
             <label className="block text-xs font-medium text-text-secondary mb-1">Dari Tanggal</label>
             <input type="date" className="input-field" value={startDate} onChange={(e) => { setStartDate(e.target.value); setPage(1); }} />
           </div>
-          <div className="flex-1">
+          <div className="w-full sm:flex-1">
             <label className="block text-xs font-medium text-text-secondary mb-1">Sampai Tanggal</label>
             <input type="date" className="input-field" value={endDate} onChange={(e) => { setEndDate(e.target.value); setPage(1); }} />
           </div>
@@ -109,11 +158,11 @@ const Transactions = () => {
               <thead>
                 <tr>
                   <th className="table-header">Invoice</th>
-                  <th className="table-header">Kasir</th>
+                  <th className="table-header hidden sm:table-cell">Kasir</th>
                   <th className="table-header">Total</th>
-                  <th className="table-header">Bayar</th>
-                  <th className="table-header">Metode</th>
-                  <th className="table-header">Tanggal</th>
+                  <th className="table-header hidden md:table-cell">Bayar</th>
+                  <th className="table-header hidden sm:table-cell">Metode</th>
+                  <th className="table-header hidden md:table-cell">Tanggal</th>
                   <th className="table-header text-right">Aksi</th>
                 </tr>
               </thead>
@@ -121,13 +170,13 @@ const Transactions = () => {
                 {transactions.map((tx) => (
                   <tr key={tx.id} className="hover:bg-gray-50/50 transition-colors cursor-pointer" onClick={() => viewDetail(tx.id)}>
                     <td className="table-cell font-medium text-primary">{tx.invoice_number}</td>
-                    <td className="table-cell text-text-secondary">{tx.cashier_name}</td>
+                    <td className="table-cell text-text-secondary hidden sm:table-cell">{tx.cashier_name}</td>
                     <td className="table-cell font-medium">{formatCurrency(tx.grand_total)}</td>
-                    <td className="table-cell">{formatCurrency(tx.payment_amount)}</td>
-                    <td className="table-cell">
+                    <td className="table-cell hidden md:table-cell">{formatCurrency(tx.payment_amount)}</td>
+                    <td className="table-cell hidden sm:table-cell">
                       <span className="badge bg-gray-100 text-text-secondary capitalize">{tx.payment_method}</span>
                     </td>
-                    <td className="table-cell text-text-secondary text-sm">{formatDate(tx.created_at)}</td>
+                    <td className="table-cell text-text-secondary text-sm hidden md:table-cell">{formatDate(tx.created_at)}</td>
                     <td className="table-cell text-right">
                       <button className="btn-ghost p-2" onClick={(e) => { e.stopPropagation(); viewDetail(tx.id); }}>
                         <Eye size={15} className="text-text-secondary" />
@@ -140,7 +189,7 @@ const Transactions = () => {
           </div>
         )}
         {meta.totalPages > 1 && (
-          <div className="flex items-center justify-between px-4 py-3 border-t border-gray-100">
+          <div className="flex flex-col sm:flex-row items-center justify-between px-4 py-3 border-t border-gray-100 gap-2">
             <p className="text-sm text-text-secondary">Halaman {meta.page} dari {meta.totalPages} ({meta.total} transaksi)</p>
             <Pagination currentPage={meta.page} totalPages={meta.totalPages} onPageChange={setPage} />
           </div>
