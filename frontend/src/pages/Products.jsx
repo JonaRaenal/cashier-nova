@@ -135,8 +135,8 @@ const Products = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-text-primary">Produk</h1>
-          <p className="text-text-secondary mt-1">Kelola daftar produk toko Anda</p>
+          <h1 className="text-2xl font-bold text-text-primary dark:text-gray-100">Produk</h1>
+          <p className="text-text-secondary mt-1 dark:text-gray-400">Kelola daftar produk toko Anda</p>
         </div>
         <button onClick={() => openModal()} className="btn-primary flex items-center gap-2">
           <Plus size={18} />
@@ -154,7 +154,7 @@ const Products = () => {
               placeholder="Cari produk..."
               className="input-field pl-10"
               value={searchQuery}
-              onChange={(e) => { setSearchQuery(e.target.value); setPage(1); }}
+              onChange={(e) => { const cleaned = e.target.value.replace(/[^a-zA-Z0-9 ]/g, ''); setSearchQuery(cleaned); setPage(1); }}
             />
           </div>
           <select
@@ -177,7 +177,7 @@ const Products = () => {
             <LoadingSpinner size="lg" />
           </div>
         ) : products.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 text-text-secondary">
+          <div className="flex flex-col items-center justify-center py-20 text-text-secondary dark:text-gray-500">
             <Package size={48} className="opacity-30 mb-3" />
             <p>Tidak ada produk ditemukan</p>
           </div>
@@ -206,10 +206,10 @@ const Products = () => {
 
                 {/* Info */}
                 <div className="flex-1">
-                  <h3 className="text-sm font-medium text-text-primary truncate">{product.name}</h3>
-                  <p className="text-xs text-text-secondary mt-0.5">{product.category_name}</p>
+                  <h3 className="text-sm font-medium text-text-primary dark:text-gray-100 truncate">{product.name}</h3>
+                  <p className="text-xs text-text-secondary dark:text-gray-400 mt-0.5">{product.category_name}</p>
                   {product.sku && (
-                    <p className="text-xs text-gray-400 mt-0.5">{product.sku}</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{product.sku}</p>
                   )}
                   <div className="mt-2">
                     <StockBadge stock={product.stock} />
@@ -217,17 +217,17 @@ const Products = () => {
                 </div>
 
                 {/* Tombol Aksi */}
-                <div className="flex gap-2 mt-3 pt-3 border-t border-gray-100">
+                <div className="flex gap-2 mt-3 pt-3 border-t border-gray-100 dark:border-gray-700">
                   <button
                     onClick={() => openModal(product)}
-                    className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-medium bg-gray-100 text-text-secondary hover:bg-primary/10 hover:text-primary transition-all duration-200"
+                    className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-medium bg-primary/10 text-primary hover:bg-primary hover:text-dark-900 transition-all duration-200"
                   >
                     <Edit2 size={13} />
                     Edit
                   </button>
                   <button
                     onClick={() => setDeleteTarget(product)}
-                    className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-medium bg-gray-100 text-text-secondary hover:bg-red-50 hover:text-danger transition-all duration-200"
+                    className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-medium bg-red-50 text-red-500 dark:bg-red-900/20 dark:text-red-400 hover:bg-red-500 hover:text-white dark:hover:bg-red-500 dark:hover:text-white transition-all duration-200"
                   >
                     <Trash2 size={13} />
                     Hapus
@@ -263,7 +263,7 @@ const Products = () => {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-text-primary mb-1">Nama Produk *</label>
+              <label className="block text-sm font-medium text-text-primary mb-1 dark:text-gray-400">Nama Produk <span className="text-danger">*</span></label>
               <input
                 type="text"
                 className="input-field"
@@ -273,7 +273,7 @@ const Products = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-text-primary mb-1">Kategori *</label>
+              <label className="block text-sm font-medium text-text-primary mb-1 dark:text-gray-400">Kategori <span className="text-danger">*</span></label>
               <select
                 className="input-field"
                 value={formData.category_id}
@@ -287,7 +287,7 @@ const Products = () => {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-text-primary mb-1">SKU</label>
+              <label className="block text-sm font-medium text-text-primary mb-1 dark:text-gray-400">SKU</label>
               <input
                 type="text"
                 className="input-field"
@@ -296,7 +296,7 @@ const Products = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-text-primary mb-1">Harga *</label>
+              <label className="block text-sm font-medium text-text-primary mb-1 dark:text-gray-400">Harga <span className="text-danger">*</span></label>
               <input
                 type="number"
                 className="input-field"
@@ -306,7 +306,7 @@ const Products = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-text-primary mb-1">Stok</label>
+              <label className="block text-sm font-medium text-text-primary mb-1 dark:text-gray-400">Stok</label>
               <input
                 type="number"
                 className="input-field"
@@ -315,7 +315,7 @@ const Products = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-text-primary mb-1">URL Gambar</label>
+              <label className="block text-sm font-medium text-text-primary mb-1 dark:text-gray-400">URL Gambar</label>
               <input
                 type="url"
                 className="input-field"
@@ -344,7 +344,7 @@ const Products = () => {
           )}
 
           <div>
-            <label className="block text-sm font-medium text-text-primary mb-1">Deskripsi</label>
+            <label className="block text-sm font-medium text-text-primary mb-1 dark:text-gray-400">Deskripsi</label>
             <textarea
               rows={3}
               className="input-field resize-none"

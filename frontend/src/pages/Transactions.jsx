@@ -121,8 +121,8 @@ const Transactions = () => {
     <div className="space-y-5 animate-fade-in">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-text-primary">Riwayat Transaksi</h1>
-          <p className="text-text-secondary mt-1">Lihat seluruh riwayat transaksi penjualan</p>
+          <h1 className="text-2xl font-bold text-text-primary dark:text-gray-100">Riwayat Transaksi</h1>
+          <p className="text-text-secondary dark:text-gray-400 mt-1">Lihat seluruh riwayat transaksi penjualan</p>
         </div>
         <button onClick={exportCSV} className="btn-secondary flex items-center gap-2 w-full sm:w-auto justify-center">
           <Download size={16} /> Export CSV
@@ -132,11 +132,11 @@ const Transactions = () => {
       <div className="card">
         <div className="flex flex-col sm:flex-row gap-3 items-end">
           <div className="w-full sm:flex-1">
-            <label className="block text-xs font-medium text-text-secondary mb-1">Dari Tanggal</label>
+            <label className="block text-xs font-medium text-text-secondary dark:text-gray-400 mb-1">Dari Tanggal</label>
             <input type="date" className="input-field" value={startDate} onChange={(e) => { setStartDate(e.target.value); setPage(1); }} />
           </div>
           <div className="w-full sm:flex-1">
-            <label className="block text-xs font-medium text-text-secondary mb-1">Sampai Tanggal</label>
+            <label className="block text-xs font-medium text-text-secondary dark:text-gray-400 mb-1">Sampai Tanggal</label>
             <input type="date" className="input-field" value={endDate} onChange={(e) => { setEndDate(e.target.value); setPage(1); }} />
           </div>
           {(startDate || endDate) && (
@@ -149,7 +149,7 @@ const Transactions = () => {
         {loading ? (
           <div className="flex items-center justify-center py-20"><LoadingSpinner size="lg" /></div>
         ) : transactions.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 text-text-secondary">
+          <div className="flex flex-col items-center justify-center py-20 text-text-secondary dark:text-gray-500">
             <Receipt size={48} className="opacity-30 mb-3" /><p>Tidak ada transaksi ditemukan</p>
           </div>
         ) : (
@@ -179,7 +179,7 @@ const Transactions = () => {
                     <td className="table-cell text-text-secondary text-sm hidden md:table-cell">{formatDate(tx.created_at)}</td>
                     <td className="table-cell text-right">
                       <button className="btn-ghost p-2" onClick={(e) => { e.stopPropagation(); viewDetail(tx.id); }}>
-                        <Eye size={15} className="text-text-secondary" />
+                        <Eye size={15} className="text-text-secondary dark:text-gray-400" />
                       </button>
                     </td>
                   </tr>
@@ -202,10 +202,10 @@ const Transactions = () => {
         ) : selectedTx && (
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-3 text-sm">
-              <div><p className="text-text-secondary">Kasir</p><p className="font-medium">{selectedTx.cashier_name}</p></div>
-              <div><p className="text-text-secondary">Tanggal</p><p className="font-medium">{formatDate(selectedTx.created_at)}</p></div>
-              <div><p className="text-text-secondary">Metode</p><p className="font-medium capitalize">{selectedTx.payment_method}</p></div>
-              <div><p className="text-text-secondary">Status</p><span className="badge-success">Selesai</span></div>
+              <div><p className="text-text-secondary dark:text-gray-400">Kasir</p><p className="font-medium">{selectedTx.cashier_name}</p></div>
+              <div><p className="text-text-secondary dark:text-gray-400">Tanggal</p><p className="font-medium">{formatDate(selectedTx.created_at)}</p></div>
+              <div><p className="text-text-secondary dark:text-gray-400">Metode</p><p className="font-medium capitalize">{selectedTx.payment_method}</p></div>
+              <div><p className="text-text-secondary dark:text-gray-400">Status</p><span className="badge-success">Selesai</span></div>
             </div>
             <div className="border-t border-gray-100 pt-4">
               <h3 className="text-sm font-semibold mb-3">Item Transaksi</h3>
@@ -213,18 +213,18 @@ const Transactions = () => {
                 <div key={idx} className="flex justify-between py-2 border-b border-gray-50 last:border-0">
                   <div>
                     <p className="text-sm font-medium">{item.product_name}</p>
-                    <p className="text-xs text-text-secondary">{item.quantity} x {formatCurrency(item.price)}</p>
+                    <p className="text-xs text-text-secondary dark:text-gray-400">{item.quantity} x {formatCurrency(item.price)}</p>
                   </div>
-                  <p className="text-sm font-medium">{formatCurrency(item.subtotal)}</p>
+                  <p className="text-sm font-medium dark:text-gray-400">{formatCurrency(item.subtotal)}</p>
                 </div>
               ))}
             </div>
             <div className="border-t border-gray-100 pt-4 space-y-2 text-sm">
-              <div className="flex justify-between text-text-secondary"><span>Subtotal</span><span>{formatCurrency(selectedTx.total_amount)}</span></div>
-              <div className="flex justify-between text-text-secondary"><span>Pajak</span><span>{formatCurrency(selectedTx.tax_amount)}</span></div>
+              <div className="flex justify-between text-text-secondary dark:text-gray-400"><span>Subtotal</span><span>{formatCurrency(selectedTx.total_amount)}</span></div>
+              <div className="flex justify-between text-text-secondary dark:text-gray-400"><span>Pajak</span><span>{formatCurrency(selectedTx.tax_amount)}</span></div>
               <div className="flex justify-between font-bold text-base pt-2 border-t"><span>Grand Total</span><span className="text-primary">{formatCurrency(selectedTx.grand_total)}</span></div>
-              <div className="flex justify-between text-text-secondary"><span>Dibayar</span><span>{formatCurrency(selectedTx.payment_amount)}</span></div>
-              <div className="flex justify-between font-medium text-emerald-600"><span>Kembalian</span><span>{formatCurrency(selectedTx.change_amount)}</span></div>
+              <div className="flex justify-between text-text-secondary dark:text-gray-400"><span>Dibayar</span><span>{formatCurrency(selectedTx.payment_amount)}</span></div>
+              <div className="flex justify-between font-medium text-emerald-600 dark:text-emerald-400"><span>Kembalian</span><span>{formatCurrency(selectedTx.change_amount)}</span></div>
             </div>
           </div>
         )}

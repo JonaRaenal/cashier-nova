@@ -141,7 +141,10 @@ const Cashier = () => {
               placeholder="Cari produk..."
               className="input-field pl-10"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => {
+                const cleaned = e.target.value.replace(/[^a-zA-Z0-9 ]/g, '');
+                setSearchQuery(cleaned);
+              }}
             />
           </div>
         </div>
@@ -227,7 +230,7 @@ const Cashier = () => {
 
   // ======== PANEL KERANJANG ========
   const CartPanel = (
-    <div className="w-full lg:w-[380px] bg-white dark:bg-dark-800 border-l border-gray-100 dark:border-dark-700 flex flex-col h-full">
+    <div className="w-full lg:w-[360px] bg-white dark:bg-dark-800 border-l border-gray-100 dark:border-dark-700 flex flex-col h-full">
       {/* Cart header */}
       <div className="p-4 border-b border-gray-100 dark:border-dark-700">
         <div className="flex items-center justify-between">
@@ -464,62 +467,62 @@ const Cashier = () => {
           <div className="receipt-print">
             <div className="text-center border-b border-dashed border-gray-300 pb-4 mb-4">
               <div className="flex items-center justify-center gap-2 mb-2">
-                <Zap size={20} className="text-primary" />
-                <h3 className="text-lg font-bold text-text-primary">CashierNova</h3>
+                <img src="/logo.svg" alt="Logo" className="w-5 h-5" />
+                <h3 className="text-lg font-bold text-text-primary dark:text-gray-100">CashierNova</h3>
               </div>
-              <p className="text-xs text-text-secondary">Jl. Contoh No. 123, Jakarta</p>
-              <p className="text-xs text-text-secondary">Telp: (021) 1234-5678</p>
+              <p className="text-xs text-text-secondary dark:text-gray-400">Jl. Contoh No. 123, Jakarta</p>
+              <p className="text-xs text-text-secondary dark:text-gray-400">Telp: (021) 1234-5678</p>
             </div>
 
-            <div className="space-y-1 text-xs text-text-secondary mb-4">
+            <div className="space-y-1 text-xs text-text-secondary dark:text-gray-400 mb-4">
               <div className="flex justify-between">
                 <span>No. Invoice</span>
-                <span className="font-medium text-text-primary">{receipt.invoice_number}</span>
+                <span className="font-medium text-text-primary dark:text-gray-100">{receipt.invoice_number}</span>
               </div>
               <div className="flex justify-between">
-                <span>Tanggal</span><span>{formatDate(new Date())}</span>
+                <span>Tanggal</span><span className="text-text-primary dark:text-gray-100">{formatDate(new Date())}</span>
               </div>
               <div className="flex justify-between">
-                <span>Kasir</span><span>{user?.name}</span>
+                <span>Kasir</span><span className="text-text-primary dark:text-gray-100">{user?.name}</span>
               </div>
               <div className="flex justify-between">
-                <span>Metode</span><span className="capitalize">{receipt.payment_method}</span>
+                <span>Metode</span><span className="capitalize text-text-primary dark:text-gray-100">{receipt.payment_method}</span>
               </div>
             </div>
 
             <div className="border-t border-dashed border-gray-300 pt-3 mb-3">
               {receipt.items?.map((item, idx) => (
                 <div key={idx} className="mb-2">
-                  <p className="text-sm font-medium text-text-primary">{item.product_name}</p>
-                  <div className="flex justify-between text-xs text-text-secondary">
+                  <p className="text-sm font-medium text-text-primary dark:text-gray-100">{item.product_name}</p>
+                  <div className="flex justify-between text-xs text-text-secondary dark:text-gray-400">
                     <span>{item.quantity} x {formatCurrency(item.price)}</span>
-                    <span className="font-medium text-text-primary">{formatCurrency(item.subtotal)}</span>
+                    <span className="font-medium text-text-primary dark:text-gray-100">{formatCurrency(item.subtotal)}</span>
                   </div>
                 </div>
               ))}
             </div>
 
             <div className="border-t border-dashed border-gray-300 pt-3 space-y-1.5">
-              <div className="flex justify-between text-sm text-text-secondary">
-                <span>Subtotal</span><span>{formatCurrency(receipt.total_amount)}</span>
+              <div className="flex justify-between text-sm text-text-secondary dark:text-gray-400">
+                <span>Subtotal</span><span className="text-text-primary dark:text-gray-100">{formatCurrency(receipt.total_amount)}</span>
               </div>
-              <div className="flex justify-between text-sm text-text-secondary">
-                <span>Pajak</span><span>{formatCurrency(receipt.tax_amount)}</span>
+              <div className="flex justify-between text-sm text-text-secondary dark:text-gray-400">
+                <span>Pajak</span><span className="text-text-primary dark:text-gray-100">{formatCurrency(receipt.tax_amount)}</span>
               </div>
-              <div className="flex justify-between text-base font-bold text-text-primary pt-1">
-                <span>Total</span><span>{formatCurrency(receipt.grand_total)}</span>
+              <div className="flex justify-between text-base font-bold text-text-primary dark:text-gray-100 pt-1">
+                <span>Total</span><span className="text-text-primary dark:text-gray-100">{formatCurrency(receipt.grand_total)}</span>
               </div>
-              <div className="flex justify-between text-sm text-text-secondary">
-                <span>Bayar</span><span>{formatCurrency(receipt.payment_amount)}</span>
+              <div className="flex justify-between text-sm text-text-secondary dark:text-gray-400">
+                <span>Bayar</span><span className="text-text-primary dark:text-gray-100">{formatCurrency(receipt.payment_amount)}</span>
               </div>
               <div className="flex justify-between text-sm font-semibold text-primary">
-                <span>Kembalian</span><span>{formatCurrency(receipt.change_amount)}</span>
+                <span>Kembalian</span><span className="text-text-primary dark:text-gray-100">{formatCurrency(receipt.change_amount)}</span>
               </div>
             </div>
 
             <div className="text-center mt-6 pt-4 border-t border-dashed border-gray-300">
-              <p className="text-xs text-text-secondary">Terima kasih atas kunjungan Anda!</p>
-              <p className="text-xs text-text-secondary mt-0.5">Barang yang sudah dibeli tidak dapat dikembalikan</p>
+              <p className="text-xs text-text-secondary dark:text-gray-400">Terima kasih atas kunjungan Anda!</p>
+              <p className="text-xs text-text-secondary dark:text-gray-400 mt-0.5">Barang yang sudah dibeli tidak dapat dikembalikan</p>
             </div>
           </div>
         )}

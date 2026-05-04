@@ -15,7 +15,9 @@ const productController = {
   getAll: async (req, res, next) => {
     try {
       const { search, category, page, limit } = req.query;
-      const result = await productModel.findAll({ search, category, page, limit });
+
+      const sanitizedSearch = search ? search.replace(/[^a-zA-Z0-9 ]/g, '').trim() : search;
+      const result = await productModel.findAll({ search: sanitizedSearch, category, page, limit });
 
       return success(res, 'Daftar produk berhasil diambil.', result.data, 200, result.meta);
     } catch (err) {

@@ -89,8 +89,8 @@ const Users = () => {
     <div className="space-y-5 animate-fade-in">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-text-primary">Pengguna</h1>
-          <p className="text-text-secondary mt-1">Kelola akun pengguna sistem</p>
+          <h1 className="text-2xl font-bold text-text-primary dark:text-gray-100">Pengguna</h1>
+          <p className="text-text-secondary dark:text-gray-400 mt-1">Kelola akun pengguna sistem</p>
         </div>
         <button onClick={() => openModal()} className="btn-primary flex items-center gap-2">
           <Plus size={18} /> Tambah User
@@ -101,7 +101,7 @@ const Users = () => {
         {loading ? (
           <div className="flex items-center justify-center py-20"><LoadingSpinner size="lg" /></div>
         ) : users.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 text-text-secondary">
+          <div className="flex flex-col items-center justify-center py-20 text-text-secondary dark:text-gray-500">
             <UsersIcon size={48} className="opacity-30 mb-3" /><p>Tidak ada pengguna</p>
           </div>
         ) : (
@@ -128,14 +128,14 @@ const Users = () => {
                   </td>
                   <td className="table-cell text-text-secondary">{u.email}</td>
                   <td className="table-cell">
-                    <span className={`badge ${u.role === 'admin' ? 'bg-purple-50 text-purple-700' : 'bg-blue-50 text-blue-700'}`}>
+                    <span className={`badge ${u.role === 'admin' ? 'bg-purple-50 text-purple-700 dark:bg-purple-900 dark:text-purple-300' : 'bg-blue-50 text-blue-700 dark:bg-blue-900 dark:text-blue-300'}`}>
                       <Shield size={12} className="mr-1" />{ROLE_LABELS[u.role]}
                     </span>
                   </td>
                   <td className="table-cell text-sm text-text-secondary">{formatDate(u.created_at)}</td>
                   <td className="table-cell text-right">
                     <div className="flex items-center justify-end gap-1">
-                      <button onClick={() => openModal(u)} className="btn-ghost p-2"><Edit2 size={15} className="text-text-secondary" /></button>
+                      <button onClick={() => openModal(u)} className="btn-ghost p-2"><Edit2 size={15} className="text-text-secondary dark:text-gray-400" /></button>
                       <button onClick={() => setDeleteTarget(u)} className="btn-ghost p-2"><Trash2 size={15} className="text-danger" /></button>
                     </div>
                   </td>
@@ -150,21 +150,21 @@ const Users = () => {
       <Modal isOpen={showModal} onClose={() => setShowModal(false)} title={editingUser ? 'Edit User' : 'Tambah User'} size="md">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-text-primary mb-1">Nama *</label>
+            <label className="block text-sm font-medium text-text-primary dark:text-gray-400 mb-1">Nama <span className="text-danger">*</span></label>
             <input type="text" className="input-field" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} required />
           </div>
           <div>
-            <label className="block text-sm font-medium text-text-primary mb-1">Email *</label>
+            <label className="block text-sm font-medium text-text-primary dark:text-gray-400 mb-1">Email <span className="text-danger">*</span></label>
             <input type="email" className="input-field" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} required />
           </div>
           <div>
-            <label className="block text-sm font-medium text-text-primary mb-1">
+            <label className="block text-sm font-medium text-text-primary dark:text-gray-400 mb-1">
               Password {editingUser ? '(kosongkan jika tidak diubah)' : '*'}
             </label>
             <input type="password" className="input-field" value={formData.password} onChange={(e) => setFormData({...formData, password: e.target.value})} {...(!editingUser && { required: true })} minLength={6} />
           </div>
           <div>
-            <label className="block text-sm font-medium text-text-primary mb-1">Role *</label>
+            <label className="block text-sm font-medium text-text-primary dark:text-gray-400 mb-1">Role <span className="text-danger">*</span></label>
             <select className="input-field" value={formData.role} onChange={(e) => setFormData({...formData, role: e.target.value})} required>
               <option value="kasir">Kasir</option>
               <option value="admin">Administrator</option>
