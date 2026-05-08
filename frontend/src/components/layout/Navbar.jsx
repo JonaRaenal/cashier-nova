@@ -34,7 +34,7 @@ const Navbar = ({ title, onMobileMenuClick }) => {
 
   return (
     <>
-      <header className="h-16 bg-white dark:bg-dark-800 border-b border-gray-100 dark:border-dark-700 flex items-center justify-between px-6 sticky top-0 z-30 transition-colors duration-300">
+      <header className="h-16 bg-white dark:bg-dark-800 border-b border-gray-100 dark:border-dark-700 flex items-center justify-between px-6 sticky top-0 z-30 transition-all duration-300 ease-in-out">
         {/* Left: Hamburger + Title */}
         <div className="flex items-center gap-3">
           <button

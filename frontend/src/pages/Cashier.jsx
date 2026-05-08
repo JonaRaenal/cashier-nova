@@ -5,7 +5,7 @@
 // Dependencies: productService, transactionService, cartStore
 // ============================================
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import {
   Search, ShoppingBag, Plus, Minus, Trash2,
   CreditCard, Printer, RotateCcw, Check,
@@ -20,6 +20,7 @@ import { formatCurrency } from '../utils/formatCurrency';
 import formatDate from '../utils/formatDate';
 import Modal from '../components/ui/Modal';
 import LoadingSpinner from '../components/shared/LoadingSpinner';
+import EmptyState from '../components/shared/EmptyState';
 import toast from 'react-hot-toast';
 import useNotificationStore from '../store/notificationStore';
 
@@ -47,6 +48,13 @@ const Cashier = () => {
 
   const [receipt, setReceipt] = useState(null);
   const [showReceipt, setShowReceipt] = useState(false);
+
+  // Stable modal handlers
+  const handleClosePayment = useCallback(() => setShowPayment(false), []);
+  const handleCloseReceipt = useCallback(() => {
+    setShowReceipt(false);
+    setReceipt(null);
+  }, []);
 
   const debouncedSearch = useDebounce(searchQuery, 300);
 
@@ -130,7 +138,7 @@ const Cashier = () => {
 
   // ======== PANEL PRODUK ========
   const ProductPanel = (
-    <div className="flex-1 flex flex-col overflow-hidden bg-background dark:bg-dark-900">
+    <div className="flex-1 flex flex-col overflow-hidden">
       {/* Search & Filter */}
       <div className="p-4 bg-white dark:bg-dark-800 border-b border-gray-100 dark:border-dark-700">
         <div className="flex items-center gap-3 mb-3">
@@ -172,24 +180,25 @@ const Cashier = () => {
       </div>
 
       {/* Product Grid */}
-      <div className="flex-1 overflow-y-auto p-4">
+      <div className="flex-1 overflow-y-auto p-4 bg-background dark:bg-dark-900/40">
         {loadingProducts ? (
           <div className="flex items-center justify-center h-40">
             <LoadingSpinner size="lg" />
           </div>
         ) : products.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-40 text-text-secondary dark:text-gray-500">
-            <Package size={40} className="mb-2 opacity-40" />
-            <p className="text-sm">Produk tidak ditemukan</p>
-          </div>
+          <EmptyState
+            icon={Package}
+            title="Produk tidak ditemukan"
+            description="Coba gunakan kata kunci pencarian lain atau pilih kategori yang berbeda."
+          />
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             {products.map((product) => (
               <button
                 key={product.id}
                 onClick={() => handleAddToCart(product)}
                 disabled={product.stock <= 0}
-                className={`card text-left p-3 hover:shadow-card-hover dark:hover:shadow-dark-card-hover transition-all duration-200 group relative ${
+                className={`card text-left p-3 hover:shadow-card-hover dark:hover:shadow-dark-card-hover hover:-translate-y-1 transition-all duration-300 group relative ${
                   product.stock <= 0 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer active:scale-[0.98]'
                 }`}
               >
@@ -230,7 +239,7 @@ const Cashier = () => {
 
   // ======== PANEL KERANJANG ========
   const CartPanel = (
-    <div className="w-full lg:w-[360px] bg-white dark:bg-dark-800 border-l border-gray-100 dark:border-dark-700 flex flex-col h-full">
+    <div className="flex flex-col h-full">
       {/* Cart header */}
       <div className="p-4 border-b border-gray-100 dark:border-dark-700">
         <div className="flex items-center justify-between">
@@ -254,11 +263,12 @@ const Cashier = () => {
       {/* Cart items */}
       <div className="flex-1 overflow-y-auto p-4 space-y-3">
         {items.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-40 text-text-secondary dark:text-gray-500">
-            <ShoppingBag size={36} className="mb-2 opacity-30" />
-            <p className="text-sm">Keranjang kosong</p>
-            <p className="text-xs mt-1">Klik produk untuk menambahkan</p>
-          </div>
+          <EmptyState
+            icon={ShoppingBag}
+            title="Keranjang masih kosong"
+            description="Silakan pilih produk di sebelah kiri untuk mulai menambahkan ke keranjang."
+            className="py-12"
+          />
         ) : (
           items.map((item) => (
             <div key={item.product_id} className="flex gap-3 p-3 bg-gray-50 dark:bg-dark-700/50 rounded-xl animate-slide-in">
@@ -304,7 +314,7 @@ const Cashier = () => {
 
       {/* Summary & Checkout */}
       {items.length > 0 && (
-        <div className="border-t border-gray-100 dark:border-dark-700 p-4 space-y-3">
+        <div className="border-t border-gray-100 dark:border-dark-700 p-4 space-y-3 bg-white dark:bg-dark-800">
           <div className="space-y-2 text-sm">
             <div className="flex justify-between text-text-secondary dark:text-gray-400">
               <span>Subtotal</span><span>{formatCurrency(subtotal)}</span>
@@ -378,13 +388,20 @@ const Cashier = () => {
       )}
 
       {/* ======== DESKTOP: 2 Kolom ======== */}
-      <div className="hidden lg:flex" style={{ height: 'calc(100vh - 64px)' }}>
-        {ProductPanel}
-        {CartPanel}
+      <div className="hidden lg:flex gap-4 p-4" style={{ height: 'calc(100vh - 64px)' }}>
+        {/* Panel Produk */}
+        <div className="flex-1 bg-white dark:bg-dark-800 rounded-2xl shadow-sm overflow-hidden border border-gray-100 dark:border-dark-700 flex flex-col">
+          {ProductPanel}
+        </div>
+
+        {/* Panel Keranjang */}
+        <div className="w-[380px] bg-white dark:bg-dark-800 rounded-2xl shadow-sm overflow-hidden border border-gray-100 dark:border-dark-700 flex flex-col">
+          {CartPanel}
+        </div>
       </div>
 
       {/* ======== MODAL PEMBAYARAN ======== */}
-      <Modal isOpen={showPayment} onClose={() => setShowPayment(false)} title="Pembayaran" size="md">
+      <Modal isOpen={showPayment} onClose={handleClosePayment} title="Pembayaran" size="md">
         <div className="space-y-5">
           <div className="text-center p-4 bg-primary/5 dark:bg-primary/10 rounded-xl">
             <p className="text-sm text-text-secondary dark:text-gray-400">Total Pembayaran</p>
@@ -462,7 +479,7 @@ const Cashier = () => {
       </Modal>
 
       {/* ======== MODAL STRUK ======== */}
-      <Modal isOpen={showReceipt} onClose={() => setShowReceipt(false)} title="Struk Transaksi" size="sm">
+      <Modal isOpen={showReceipt} onClose={handleCloseReceipt} title="Struk Transaksi" size="sm">
         {receipt && (
           <div className="receipt-print">
             <div className="text-center border-b border-dashed border-gray-300 pb-4 mb-4">
@@ -532,7 +549,7 @@ const Cashier = () => {
             <Printer size={16} />Print Struk
           </button>
           <button
-            onClick={() => { setShowReceipt(false); setReceipt(null); }}
+            onClick={handleCloseReceipt}
             className="btn-primary flex-1 flex items-center justify-center gap-2"
           >
             <RotateCcw size={16} />Transaksi Baru

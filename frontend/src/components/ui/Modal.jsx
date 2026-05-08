@@ -17,17 +17,24 @@ const Modal = ({ isOpen, onClose, title, children, size = 'md', showClose = true
 
   const modalRef = useRef(null);
 
-  // Tutup modal dengan Escape + focus trap
+  // Focus modal saat pertama kali dibuka
   useEffect(() => {
+    if (isOpen) {
+      modalRef.current?.focus();
+    }
+  }, [isOpen]);
+
+  // Tutup modal dengan Escape + lock scroll
+  useEffect(() => {
+    if (!isOpen) return;
+
     const handleEscape = (e) => {
       if (e.key === 'Escape') onClose();
     };
-    if (isOpen) {
-      document.addEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'hidden';
-      // Focus modal saat dibuka
-      modalRef.current?.focus();
-    }
+
+    document.addEventListener('keydown', handleEscape);
+    document.body.style.overflow = 'hidden';
+
     return () => {
       document.removeEventListener('keydown', handleEscape);
       document.body.style.overflow = 'unset';

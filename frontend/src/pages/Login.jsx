@@ -57,7 +57,7 @@ const Login = () => {
       </div>
 
       <div>
-        <h2 className="text-2xl font-bold text-white mb-2">Selamat Datang 👋</h2>
+        <h2 className="text-2xl font-bold text-white mb-2">Selamat Datang</h2>
         <p className="text-gray-400 mb-8">Masuk ke akun Anda untuk melanjutkan</p>
       </div>
 

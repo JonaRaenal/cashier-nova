@@ -117,7 +117,7 @@ const Users = () => {
             </thead>
             <tbody>
               {users.map((u) => (
-                <tr key={u.id} className="hover:bg-gray-50/50 transition-colors">
+                <tr key={u.id} className="hover:bg-gray-100 dark:hover:bg-dark-700 transition-colors">
                   <td className="table-cell">
                     <div className="flex items-center gap-3">
                       <div className="w-9 h-9 bg-primary/10 rounded-full flex items-center justify-center">

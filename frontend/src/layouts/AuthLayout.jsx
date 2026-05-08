@@ -6,6 +6,7 @@
 
 import { Outlet, Navigate } from 'react-router-dom';
 import useAuthStore from '../store/authStore';
+import CountUp from '../components/shared/CountUp';
 
 const AuthLayout = () => {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
@@ -36,18 +37,24 @@ const AuthLayout = () => {
           </p>
           <div className="mt-12 flex items-center justify-center gap-8 text-gray-500">
             <div className="text-center">
-              <p className="text-2xl font-bold text-white">99.9%</p>
+              <p className="text-2xl font-bold text-white">
+                <CountUp end={99.9} decimals={1} suffix="%" />
+              </p>
               <p className="text-sm">Uptime</p>
             </div>
             <div className="w-px h-10 bg-gray-700" />
             <div className="text-center">
-              <p className="text-2xl font-bold text-white">&lt;1s</p>
-              <p className="text-sm">Response</p>
+              <p className="text-2xl font-bold text-white">
+                <CountUp end={1.2} decimals={1} suffix="k+" />
+              </p>
+              <p className="text-sm">Transactions</p>
             </div>
             <div className="w-px h-10 bg-gray-700" />
             <div className="text-center">
-              <p className="text-2xl font-bold text-white">256-bit</p>
-              <p className="text-sm">Encrypted</p>
+              <p className="text-2xl font-bold text-white">
+                <CountUp end={100} suffix="%" />
+              </p>
+              <p className="text-sm">Security</p>
             </div>
           </div>
         </div>

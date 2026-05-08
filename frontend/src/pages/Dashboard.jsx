@@ -28,6 +28,7 @@ import { formatCurrency } from '../utils/formatCurrency';
 import formatDate from '../utils/formatDate';
 import { SkeletonCard } from '../components/shared/Skeleton';
 import useThemeStore from '../store/themeStore';
+import CountUp from '../components/shared/CountUp';
 
 const Dashboard = () => {
   const [summary, setSummary] = useState(null);
@@ -62,7 +63,8 @@ const Dashboard = () => {
   const cards = useMemo(() => [
     {
       title: 'Penjualan Hari Ini',
-      value: formatCurrency(summary?.today_sales || 0),
+      value: summary?.today_sales || 0,
+      prefix: 'Rp ',
       icon: DollarSign,
       color: 'text-emerald-600 dark:text-emerald-400',
       iconBg: 'bg-emerald-100 dark:bg-emerald-900/30',
@@ -118,12 +120,14 @@ const Dashboard = () => {
           {cards.map((card, index) => (
             <div
               key={index}
-              className="card hover:shadow-card-hover dark:hover:shadow-dark-card-hover transition-all duration-200 group"
+              className="card hover:shadow-card-hover dark:hover:shadow-dark-card-hover hover:-translate-y-1 transition-all duration-300 group cursor-default"
             >
               <div className="flex items-start justify-between">
                 <div>
                   <p className="text-sm text-text-secondary dark:text-gray-400">{card.title}</p>
-                  <p className="text-2xl font-bold text-text-primary dark:text-gray-100 mt-1">{card.value}</p>
+                  <p className="text-2xl font-bold text-text-primary dark:text-gray-100 mt-1">
+                    <CountUp end={card.value} prefix={card.prefix} duration={1000} />
+                  </p>
                 </div>
                 <div className={`w-11 h-11 rounded-xl ${card.iconBg} flex items-center justify-center group-hover:scale-110 transition-transform duration-200`}>
                   <card.icon size={20} className={card.color} />

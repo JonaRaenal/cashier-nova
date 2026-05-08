@@ -168,7 +168,7 @@ const Transactions = () => {
               </thead>
               <tbody>
                 {transactions.map((tx) => (
-                  <tr key={tx.id} className="hover:bg-gray-50/50 transition-colors cursor-pointer" onClick={() => viewDetail(tx.id)}>
+                  <tr key={tx.id} className="hover:bg-gray-100 dark:hover:bg-dark-700 transition-colors cursor-pointer" onClick={() => viewDetail(tx.id)}>
                     <td className="table-cell font-medium text-primary">{tx.invoice_number}</td>
                     <td className="table-cell text-text-secondary hidden sm:table-cell">{tx.cashier_name}</td>
                     <td className="table-cell font-medium">{formatCurrency(tx.grand_total)}</td>
