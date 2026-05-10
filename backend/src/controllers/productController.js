@@ -73,10 +73,7 @@ const productController = {
     }
   },
 
-  /**
-   * DELETE /api/products/:id
-   * Soft delete produk
-   */
+ 
   delete: async (req, res, next) => {
     try {
       const existing = await productModel.findById(req.params.id);
@@ -91,10 +88,7 @@ const productController = {
     }
   },
 
-  /**
-   * PATCH /api/products/:id/stock
-   * Update stok produk
-   */
+
   updateStock: async (req, res, next) => {
     try {
       const existing = await productModel.findById(req.params.id);
