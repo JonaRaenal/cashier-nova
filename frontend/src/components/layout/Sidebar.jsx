@@ -1,9 +1,3 @@
-// ============================================
-// CashierNova — Sidebar Component
-// Navigasi utama sidebar dengan menu dan role-based visibility
-// Dependencies: react-router-dom, lucide-react, authStore
-// ============================================
-
 import { NavLink } from 'react-router-dom';
 import {
   LayoutDashboard,

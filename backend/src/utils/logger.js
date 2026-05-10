@@ -1,9 +1,3 @@
-// ============================================
-// CashierNova — Logger Utility
-// Logging dengan Winston — tanpa console.log di production
-// Dependencies: winston
-// ============================================
-
 const { createLogger, format, transports } = require('winston');
 const env = require('../config/env');
 

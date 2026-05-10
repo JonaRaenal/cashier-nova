@@ -1,9 +1,3 @@
-// ============================================
-// CashierNova — Role Route Guard
-// Redirect ke /dashboard jika bukan role yang sesuai
-// Dependencies: react-router-dom, authStore
-// ============================================
-
 import { Navigate, Outlet } from 'react-router-dom';
 import useAuthStore from '../store/authStore';
 

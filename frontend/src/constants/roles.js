@@ -1,8 +1,3 @@
-// ============================================
-// CashierNova — Role Constants
-// Definisi role user dalam sistem
-// ============================================
-
 export const ROLES = {
   ADMIN: 'admin',
   KASIR: 'kasir',

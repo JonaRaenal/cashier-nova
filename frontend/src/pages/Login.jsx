@@ -1,9 +1,3 @@
-// ============================================
-// CashierNova — Login Page
-// Form login dengan validasi React Hook Form + Zod
-// Dependencies: react-hook-form, zod, authStore
-// ============================================
-
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';

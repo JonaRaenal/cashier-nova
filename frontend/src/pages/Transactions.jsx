@@ -1,9 +1,3 @@
-// ============================================
-// CashierNova — Transactions Page
-// Riwayat transaksi dengan filter tanggal dan detail modal
-// Dependencies: transactionService, lucide-react
-// ============================================
-
 import { useState, useEffect } from 'react';
 import { Receipt, Eye, Download } from 'lucide-react';
 import transactionService from '../services/transactionService';

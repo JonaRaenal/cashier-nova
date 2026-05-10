@@ -1,22 +1,14 @@
-// ============================================
-// CashierNova — Cart Store (Zustand)
-// State management untuk keranjang belanja kasir
-// Dependencies: zustand
-// ============================================
-
 import { create } from 'zustand';
 
 const useCartStore = create((set, get) => ({
   // State
   items: [],
 
-  // Menambahkan item ke keranjang
   addItem: (product) => {
     const { items } = get();
     const existingIndex = items.findIndex((item) => item.product_id === product.id);
 
     if (existingIndex >= 0) {
-      // Jika sudah ada, tambah quantity
       const updated = [...items];
       if (updated[existingIndex].quantity < product.stock) {
         updated[existingIndex].quantity += 1;
@@ -24,7 +16,6 @@ const useCartStore = create((set, get) => ({
         set({ items: updated });
       }
     } else {
-      // Tambah item baru
       set({
         items: [
           ...items,
@@ -42,12 +33,10 @@ const useCartStore = create((set, get) => ({
     }
   },
 
-  // Menghapus item dari keranjang
   removeItem: (productId) => {
     set({ items: get().items.filter((item) => item.product_id !== productId) });
   },
 
-  // Mengupdate quantity item
   updateQty: (productId, quantity) => {
     const { items } = get();
     const updated = items.map((item) => {
@@ -60,18 +49,14 @@ const useCartStore = create((set, get) => ({
     set({ items: updated });
   },
 
-  // Mengosongkan keranjang
   clearCart: () => set({ items: [] }),
 
-  // Computed: total semua item
   get total() {
     return get().items.reduce((sum, item) => sum + item.subtotal, 0);
   },
 
-  // Getter untuk total
   getTotal: () => get().items.reduce((sum, item) => sum + item.subtotal, 0),
 
-  // Getter untuk jumlah item
   getItemCount: () => get().items.reduce((sum, item) => sum + item.quantity, 0),
 }));
 

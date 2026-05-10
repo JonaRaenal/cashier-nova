@@ -1,9 +1,3 @@
-// ============================================
-// CashierNova — Product Model (sql.js)
-// Operasi database untuk tabel products
-// Dependencies: config/db (sql.js)
-// ============================================
-
 const { getDb, saveDatabase } = require('../config/db');
 
 const queryAll = (sql, params = []) => {

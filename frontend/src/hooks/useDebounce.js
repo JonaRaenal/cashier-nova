@@ -1,9 +1,3 @@
-// ============================================
-// CashierNova — useDebounce Hook
-// Debounce value untuk search realtime
-// Dependencies: react
-// ============================================
-
 import { useState, useEffect } from 'react';
 
 const useDebounce = (value, delay = 300) => {

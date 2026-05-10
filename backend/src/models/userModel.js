@@ -1,12 +1,5 @@
-// ============================================
-// CashierNova — User Model (sql.js)
-// Operasi database untuk tabel users
-// Dependencies: config/db (sql.js)
-// ============================================
-
 const { getDb, saveDatabase } = require('../config/db');
 
-// Helper: jalankan SELECT dan return array of objects
 const queryAll = (sql, params = []) => {
   const db = getDb();
   const stmt = db.prepare(sql);
@@ -19,7 +12,6 @@ const queryAll = (sql, params = []) => {
   return rows;
 };
 
-// Helper: jalankan SELECT dan return satu object
 const queryOne = (sql, params = []) => {
   const db = getDb();
   const stmt = db.prepare(sql);
@@ -32,7 +24,6 @@ const queryOne = (sql, params = []) => {
   return row;
 };
 
-// Helper: jalankan INSERT/UPDATE/DELETE
 const execute = (sql, params = []) => {
   const db = getDb();
   db.run(sql, params);

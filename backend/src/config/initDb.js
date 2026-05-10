@@ -1,9 +1,3 @@
-// ============================================
-// CashierNova — Database Initializer (sql.js)
-// Membuat tabel dan seed data otomatis saat pertama kali
-// Dependencies: sql.js, bcrypt
-// ============================================
-
 const { getDb, saveDatabase } = require('../config/db');
 const bcrypt = require('bcryptjs');
 const logger = require('../utils/logger');
@@ -11,7 +5,6 @@ const logger = require('../utils/logger');
 const initDatabase = () => {
   const db = getDb();
 
-  // ---- Buat semua tabel ----
   db.run(`
     CREATE TABLE IF NOT EXISTS users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -86,7 +79,7 @@ const initDatabase = () => {
     )
   `);
 
-  // ---- Seed data jika tabel kosong ----
+  // Seed data jika tabel kosong
   const result = db.exec('SELECT COUNT(*) as count FROM users');
   const userCount = result[0]?.values[0][0] || 0;
 

@@ -1,9 +1,3 @@
-// ============================================
-// CashierNova — Database Reset (sql.js)
-// Mereset tabel dan seed data otomatis saat pertama kali
-// Dependencies: sql.js, bcrypt
-// ============================================
-
 const { initConnection, saveDatabase } = require('./db');
 const bcrypt = require('bcryptjs');
 
@@ -12,7 +6,6 @@ const resetDatabase = async () => {
 
   console.log('🗑️  Menghapus data lama...');
 
-  // Drop semua tabel
   db.run('DROP TABLE IF EXISTS transaction_items');
   db.run('DROP TABLE IF EXISTS transactions');
   db.run('DROP TABLE IF EXISTS products');
@@ -21,7 +14,6 @@ const resetDatabase = async () => {
 
   console.log('🔨 Membuat ulang tabel...');
 
-  // Buat ulang tabel
   db.run(`CREATE TABLE users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
@@ -88,7 +80,6 @@ const resetDatabase = async () => {
 
   console.log('🌱 Menanam data baru...');
 
-  // Seed users
   const adminHash = bcrypt.hashSync('admin123', 10);
   const kasirHash = bcrypt.hashSync('kasir123', 10);
   db.run('INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)',
@@ -96,12 +87,10 @@ const resetDatabase = async () => {
   db.run('INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)',
     ['Kasir Demo', 'kasir@cashiernova.com', kasirHash, 'kasir']);
 
-  // Seed kategori
   db.run('INSERT INTO categories (name, description) VALUES (?, ?)', ['Makanan', 'Produk makanan ringan dan berat']);
   db.run('INSERT INTO categories (name, description) VALUES (?, ?)', ['Minuman', 'Minuman dingin dan panas']);
   db.run('INSERT INTO categories (name, description) VALUES (?, ?)', ['Snack', 'Camilan dan kue kering']);
 
-  // Seed produk
   const products = [
     [1, 'Indomie Goreng', 'MKN-001', 3500, 50, 'https://images.unsplash.com/photo-1612929633738-8fe44f7ec841?w=300'],
     [1, 'Beras Premium 5kg', 'MKN-002', 75000, 40, 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=300'],

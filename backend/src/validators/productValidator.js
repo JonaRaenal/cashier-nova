@@ -1,9 +1,3 @@
-// ============================================
-// CashierNova — Product Validator
-// Rules validasi untuk endpoint produk
-// Dependencies: express-validator
-// ============================================
-
 const { body, param } = require('express-validator');
 
 const productValidator = {

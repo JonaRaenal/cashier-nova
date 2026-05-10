@@ -1,9 +1,3 @@
-// ============================================
-// CashierNova — Axios Instance & Interceptors
-// Base URL, auto-attach token, auto-refresh on 401
-// Dependencies: axios
-// ============================================
-
 import axios from 'axios';
 
 const api = axios.create({
@@ -13,7 +7,6 @@ const api = axios.create({
   },
 });
 
-// Request interceptor — attach token ke setiap request
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('access_token');
@@ -25,7 +18,6 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Response interceptor — auto refresh token jika 401
 api.interceptors.response.use(
   (response) => response,
   async (error) => {

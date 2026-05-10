@@ -1,18 +1,8 @@
-// ============================================
-// CashierNova — User Controller
-// Handler untuk CRUD manajemen user (admin only)
-// Dependencies: bcrypt, userModel
-// ============================================
-
 const bcrypt = require('bcryptjs');
 const userModel = require('../models/userModel');
 const { success, error } = require('../utils/response');
 
 const userController = {
-  /**
-   * GET /api/users
-   * Mengambil semua user
-   */
   getAll: async (req, res, next) => {
     try {
       const users = await userModel.findAll();
@@ -22,10 +12,6 @@ const userController = {
     }
   },
 
-  /**
-   * POST /api/users
-   * Membuat user baru
-   */
   create: async (req, res, next) => {
     try {
       const { name, email, password, role } = req.body;
@@ -52,10 +38,6 @@ const userController = {
     }
   },
 
-  /**
-   * PUT /api/users/:id
-   * Mengupdate user
-   */
   update: async (req, res, next) => {
     try {
       const existing = await userModel.findById(req.params.id);
@@ -78,10 +60,6 @@ const userController = {
     }
   },
 
-  /**
-   * DELETE /api/users/:id
-   * Soft delete user
-   */
   delete: async (req, res, next) => {
     try {
       // Cegah hapus diri sendiri

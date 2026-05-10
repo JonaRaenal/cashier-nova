@@ -1,10 +1,3 @@
-// ============================================
-// CashierNova — Cashier Page (PRIORITAS UTAMA)
-// Layout 2 kolom: produk (kiri) + keranjang (kanan)
-// Termasuk search, filter, cart, pembayaran, dan struk digital
-// Dependencies: productService, transactionService, cartStore
-// ============================================
-
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import {
   Search, ShoppingBag, Plus, Minus, Trash2,

@@ -1,9 +1,3 @@
-// ============================================
-// CashierNova — Auth Service
-// API calls untuk autentikasi
-// Dependencies: api.js
-// ============================================
-
 import api from './api';
 
 const authService = {

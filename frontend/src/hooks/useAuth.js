@@ -1,9 +1,3 @@
-// ============================================
-// CashierNova — useAuth Hook
-// Custom hook untuk akses auth store
-// Dependencies: authStore
-// ============================================
-
 import useAuthStore from '../store/authStore';
 
 const useAuth = () => {

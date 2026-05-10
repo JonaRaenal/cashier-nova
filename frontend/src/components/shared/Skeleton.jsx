@@ -1,8 +1,3 @@
-// ============================================
-// CashierNova — Skeleton Loading Components
-// Placeholder shimmer untuk loading state
-// ============================================
-
 const SkeletonLine = ({ className = '' }) => (
   <div className={`skeleton h-4 rounded ${className}`} />
 );

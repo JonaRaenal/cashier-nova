@@ -1,16 +1,6 @@
-// ============================================
-// CashierNova — Global Error Handler
-// Menangkap semua error dan format response konsisten
-// Dependencies: utils/response, utils/logger
-// ============================================
-
 const { error } = require('../utils/response');
 const logger = require('../utils/logger');
 
-/**
- * Global error handler middleware
- * Menangani semua error yang tidak tertangkap di controller
- */
 const errorHandler = (err, req, res, _next) => {
   logger.error(err.message, { stack: err.stack });
 

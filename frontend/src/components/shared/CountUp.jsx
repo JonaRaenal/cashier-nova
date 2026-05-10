@@ -1,13 +1,6 @@
-// ============================================
-// CashierNova — Shared CountUp Component
-// Animate numbers from a start value to an end value
-// Dependencies: react
-// ============================================
-
 import { useState, useEffect } from 'react';
 
 /**
- * CountUp Component
  * @param {number} end - Target value
  * @param {number} start - Initial value (default: 1)
  * @param {number} duration - Animation duration in ms (default: 2000)

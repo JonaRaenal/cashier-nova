@@ -1,8 +1,3 @@
-// ============================================
-// CashierNova — Modal Component
-// Komponen modal yang reusable dengan animasi + dark mode
-// ============================================
-
 import { useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
 
