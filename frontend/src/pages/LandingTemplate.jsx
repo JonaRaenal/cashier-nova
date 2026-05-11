@@ -64,7 +64,7 @@ const LandingTemplate = () => {
       </defs>
     </svg>
 
-    <!-- Preloader removed to fix infinite spinning in React -->
+    { /* Preloader removed to fix infinite spinning in React */ }
 
     <div className="offcanvas offcanvas-end" data-bs-scroll="true" tabindex="-1" id="offcanvasCart">
       <div className="offcanvas-header justify-content-center">
@@ -863,7 +863,7 @@ const LandingTemplate = () => {
 
               
             </div>
-            <!-- / product-grid -->
+            { /* / product-grid */ }
 
 
           </div>
@@ -909,7 +909,7 @@ const LandingTemplate = () => {
               </div>
 
             </div>
-            <!-- / Banner Blocks -->
+            { /* / Banner Blocks */ }
               
           </div>
         </div>
@@ -1242,7 +1242,7 @@ const LandingTemplate = () => {
                   
               </div>
             </div>
-            <!-- / products-carousel -->
+            { /* products-carousel */ }
 
           </div>
         </div>
@@ -1613,7 +1613,7 @@ const LandingTemplate = () => {
                   
               </div>
             </div>
-            <!-- / products-carousel -->
+            { /* products-carousel */ }
 
           </div>
         </div>
@@ -1945,7 +1945,7 @@ const LandingTemplate = () => {
                   
               </div>
             </div>
-            <!-- / products-carousel -->
+            { /* products-carousel */ }
 
           </div>
         </div>

@@ -4,10 +4,10 @@ const categoryController = require('../controllers/categoryController');
 const authMiddleware = require('../middlewares/authMiddleware');
 const roleMiddleware = require('../middlewares/roleMiddleware');
 
-// Semua route memerlukan autentikasi
-router.use(authMiddleware);
-
 router.get('/', categoryController.getAll);
+
+// Semua route memerlukan autentikasi (kecuali get)
+router.use(authMiddleware);
 
 router.post('/', roleMiddleware('admin'), categoryController.create);
 
