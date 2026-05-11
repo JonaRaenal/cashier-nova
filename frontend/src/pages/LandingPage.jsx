@@ -81,22 +81,8 @@ const LandingPage = () => {
               </span>
             </div>
 
-            {/* Search Bar - Desktop */}
-            <div className="hidden md:flex flex-1 max-w-xl mx-8 relative group">
-              <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-emerald-500 transition-colors">
-                <Search size={20} />
-              </div>
-              <input 
-                type="text" 
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Cari produk segar favorit Anda..." 
-                className="w-full bg-gray-100/80 border-2 border-transparent focus:bg-white focus:border-emerald-500 rounded-2xl py-3 pl-12 pr-4 text-slate-700 font-medium placeholder-gray-400 outline-none transition-all duration-300 shadow-sm focus:shadow-emerald-100"
-              />
-            </div>
-
             {/* Actions */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 ml-auto">
               <button 
                 onClick={() => navigate('/login')}
                 className="hidden sm:flex items-center gap-2 px-5 py-2.5 text-sm font-bold text-slate-600 hover:text-emerald-600 bg-white hover:bg-emerald-50 border border-gray-200 hover:border-emerald-200 rounded-xl transition-all duration-300"
@@ -202,15 +188,33 @@ const LandingPage = () => {
       {/* --- PRODUCT GRID --- */}
       <section className="py-20 px-4" id="products">
         <div className="container mx-auto">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
-            <div>
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-12 gap-6">
+            <div className="flex-1">
               <h2 className="text-3xl md:text-4xl font-black text-slate-900 mb-3">Produk Terpopuler</h2>
-              <p className="text-slate-500 text-lg">Pilihan terbaik dari pelanggan kami minggu ini.</p>
+              <p className="text-slate-500 text-lg mb-6 lg:mb-0">Pilihan terbaik dari pelanggan kami minggu ini.</p>
             </div>
-            <div className="flex gap-2">
-              <button className="px-6 py-2 bg-slate-900 text-white rounded-full font-semibold text-sm">Semua</button>
-              <button className="px-6 py-2 bg-white border border-gray-200 text-slate-600 hover:bg-gray-50 rounded-full font-semibold text-sm transition-colors">Sayuran</button>
-              <button className="px-6 py-2 bg-white border border-gray-200 text-slate-600 hover:bg-gray-50 rounded-full font-semibold text-sm transition-colors">Buah</button>
+            
+            <div className="flex flex-col sm:flex-row items-center gap-4 w-full lg:w-auto">
+              {/* Search Bar */}
+              <div className="relative group w-full sm:w-80 flex-shrink-0">
+                <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-emerald-500 transition-colors">
+                  <Search size={18} />
+                </div>
+                <input 
+                  type="text" 
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder="Cari produk..." 
+                  className="w-full bg-white border border-gray-200 focus:border-emerald-500 rounded-full py-2.5 pl-11 pr-4 text-slate-700 font-medium placeholder-gray-400 outline-none transition-all duration-300 shadow-sm focus:shadow-emerald-100/50"
+                />
+              </div>
+
+              {/* Category Filters */}
+              <div className="flex gap-2 w-full sm:w-auto overflow-x-auto pb-2 sm:pb-0" style={{ scrollbarWidth: 'none' }}>
+                <button className="px-5 py-2.5 bg-slate-900 text-white rounded-full font-semibold text-sm whitespace-nowrap">Semua</button>
+                <button className="px-5 py-2.5 bg-white border border-gray-200 text-slate-600 hover:bg-gray-50 rounded-full font-semibold text-sm transition-colors whitespace-nowrap">Sayuran</button>
+                <button className="px-5 py-2.5 bg-white border border-gray-200 text-slate-600 hover:bg-gray-50 rounded-full font-semibold text-sm transition-colors whitespace-nowrap">Buah</button>
+              </div>
             </div>
           </div>
 
