@@ -28,6 +28,7 @@ const Cashier = lazy(() => import('./pages/Cashier'));
 const Products = lazy(() => import('./pages/Products'));
 const Transactions = lazy(() => import('./pages/Transactions'));
 const Users = lazy(() => import('./pages/Users'));
+const LandingPage = lazy(() => import('./pages/LandingPage'));
 
 // Page loading fallback
 const PageLoader = () => (
@@ -45,7 +46,7 @@ function App() {
   }, [initTheme]);
 
   return (
-    <BrowserRouter>
+    <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       {/* Toast Notifications — theme-aware */}
       <Toaster
         position="top-right"
@@ -125,8 +126,12 @@ function App() {
             </Route>
           </Route>
 
-          {/* Default redirect */}
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          {/* Default redirect to landing page */}
+          <Route path="/" element={
+            <Suspense fallback={<PageLoader />}>
+              <LandingPage />
+            </Suspense>
+          } />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </ErrorBoundary>

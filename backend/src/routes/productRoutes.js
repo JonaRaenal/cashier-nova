@@ -12,14 +12,13 @@ const roleMiddleware = require('../middlewares/roleMiddleware');
 const validateMiddleware = require('../middlewares/validateMiddleware');
 const productValidator = require('../validators/productValidator');
 
-// Semua route memerlukan autentikasi
+// Public routes (tidak perlu autentikasi)
+router.get('/', productController.getAll);
+router.get('/:id', productController.getById);
+
+// Middleware autentikasi untuk route di bawahnya (POST, PUT, DELETE, dll)
 router.use(authMiddleware);
 
-// GET /api/products — semua role
-router.get('/', productController.getAll);
-
-// GET /api/products/:id — semua role
-router.get('/:id', productController.getById);
 
 // POST /api/products — admin only
 router.post('/', roleMiddleware('admin'), validateMiddleware(productValidator.create), productController.create);

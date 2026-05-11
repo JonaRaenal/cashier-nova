@@ -1,78 +1,74 @@
 // ============================================
 // CashierNova — Cart Store (Zustand)
-// State management untuk keranjang belanja kasir
-// Dependencies: zustand
+// State management untuk keranjang belanja Landing Page
 // ============================================
 
 import { create } from 'zustand';
 
 const useCartStore = create((set, get) => ({
-  // State
-  items: [],
+  items: JSON.parse(localStorage.getItem('landing_cart') || '[]'),
+  isOpen: false,
 
-  // Menambahkan item ke keranjang
+  toggleCart: () => set((state) => ({ isOpen: !state.isOpen })),
+  openCart: () => set({ isOpen: true }),
+  closeCart: () => set({ isOpen: false }),
+
   addItem: (product) => {
-    const { items } = get();
-    const existingIndex = items.findIndex((item) => item.product_id === product.id);
-
-    if (existingIndex >= 0) {
-      // Jika sudah ada, tambah quantity
-      const updated = [...items];
-      if (updated[existingIndex].quantity < product.stock) {
-        updated[existingIndex].quantity += 1;
-        updated[existingIndex].subtotal = updated[existingIndex].quantity * updated[existingIndex].price;
-        set({ items: updated });
+    set((state) => {
+      const existingItem = state.items.find((item) => item.id === product.id);
+      let newItems;
+      
+      if (existingItem) {
+        newItems = state.items.map((item) =>
+          item.id === product.id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        );
+      } else {
+        newItems = [...state.items, { ...product, quantity: 1 }];
       }
-    } else {
-      // Tambah item baru
-      set({
-        items: [
-          ...items,
-          {
-            product_id: product.id,
-            product_name: product.name,
-            price: product.price,
-            quantity: 1,
-            subtotal: product.price,
-            stock: product.stock,
-            image_url: product.image_url,
-          },
-        ],
-      });
-    }
-  },
-
-  // Menghapus item dari keranjang
-  removeItem: (productId) => {
-    set({ items: get().items.filter((item) => item.product_id !== productId) });
-  },
-
-  // Mengupdate quantity item
-  updateQty: (productId, quantity) => {
-    const { items } = get();
-    const updated = items.map((item) => {
-      if (item.product_id === productId) {
-        const qty = Math.max(1, Math.min(quantity, item.stock));
-        return { ...item, quantity: qty, subtotal: qty * item.price };
-      }
-      return item;
+      
+      localStorage.setItem('landing_cart', JSON.stringify(newItems));
+      return { items: newItems };
     });
-    set({ items: updated });
   },
 
-  // Mengosongkan keranjang
-  clearCart: () => set({ items: [] }),
-
-  // Computed: total semua item
-  get total() {
-    return get().items.reduce((sum, item) => sum + item.subtotal, 0);
+  removeItem: (productId) => {
+    set((state) => {
+      const newItems = state.items.filter((item) => item.id !== productId);
+      localStorage.setItem('landing_cart', JSON.stringify(newItems));
+      return { items: newItems };
+    });
   },
 
-  // Getter untuk total
-  getTotal: () => get().items.reduce((sum, item) => sum + item.subtotal, 0),
+  updateQuantity: (productId, quantity) => {
+    set((state) => {
+      if (quantity <= 0) {
+        const newItems = state.items.filter((item) => item.id !== productId);
+        localStorage.setItem('landing_cart', JSON.stringify(newItems));
+        return { items: newItems };
+      }
+      
+      const newItems = state.items.map((item) =>
+        item.id === productId ? { ...item, quantity } : item
+      );
+      localStorage.setItem('landing_cart', JSON.stringify(newItems));
+      return { items: newItems };
+    });
+  },
 
-  // Getter untuk jumlah item
-  getItemCount: () => get().items.reduce((sum, item) => sum + item.quantity, 0),
+  clearCart: () => {
+    localStorage.removeItem('landing_cart');
+    set({ items: [] });
+  },
+
+  getCartTotal: () => {
+    return get().items.reduce((total, item) => total + (item.price * item.quantity), 0);
+  },
+  
+  getCartCount: () => {
+    return get().items.reduce((count, item) => count + item.quantity, 0);
+  }
 }));
 
 export default useCartStore;
