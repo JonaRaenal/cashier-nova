@@ -1,8 +1,3 @@
-// ============================================
-// CashierNova — Error Boundary Component
-// Menangkap error di komponen anak dan tampilkan fallback
-// ============================================
-
 import { Component } from 'react';
 import { AlertTriangle, RotateCcw } from 'lucide-react';
 
@@ -17,7 +12,6 @@ class ErrorBoundary extends Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    // Log error ke console (bisa diganti dengan error reporting service)
     console.error('ErrorBoundary caught:', error, errorInfo);
   }
 
@@ -27,7 +21,6 @@ class ErrorBoundary extends Component {
 
   render() {
     if (this.state.hasError) {
-      // Custom fallback jika disediakan
       if (this.props.fallback) {
         return this.props.fallback;
       }

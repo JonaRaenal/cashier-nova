@@ -1,14 +1,7 @@
-// ============================================
-// CashierNova — useKeyboardShortcuts Hook
-// Keyboard shortcut handler untuk kasir desktop
-// F1-F12 dan Ctrl+key shortcuts
-// ============================================
-
 import { useEffect, useCallback } from 'react';
 
 /**
  * @param {Object} shortcuts - Map dari key ke handler
- * Contoh: { 'F1': () => {}, 'F2': () => {}, 'ctrl+s': () => {} }
  * @param {boolean} enabled - Apakah shortcuts aktif
  */
 const useKeyboardShortcuts = (shortcuts = {}, enabled = true) => {

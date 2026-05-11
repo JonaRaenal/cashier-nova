@@ -1,9 +1,3 @@
-// ============================================
-// CashierNova — Product Service
-// API calls untuk produk dan kategori
-// Dependencies: api.js
-// ============================================
-
 import api from './api';
 
 const productService = {

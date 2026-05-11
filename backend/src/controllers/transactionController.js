@@ -1,52 +1,64 @@
-// ============================================
-// CashierNova — Transaction Controller
-// Handler untuk membuat dan melihat transaksi
-// Dependencies: transactionModel
-// ============================================
-
 const transactionModel = require('../models/transactionModel');
+const productModel = require('../models/productModel');
+const { createTransactionSchema } = require('../validators/transactionValidator');
 const { success, error } = require('../utils/response');
 
 const transactionController = {
-  /**
-   * POST /api/transactions
-   * Membuat transaksi baru (atomic dengan DB transaction)
-   */
   create: async (req, res, next) => {
     try {
-      const { items, payment_amount, payment_method, notes, tax_rate = 0 } = req.body;
-
-      if (!items || items.length === 0) {
-        return error(res, 'Minimal 1 item diperlukan untuk membuat transaksi.', 400);
+      // 1. Validasi input menggunakan Zod
+      const validation = createTransactionSchema.safeParse(req.body);
+      
+      if (!validation.success) {
+        const formattedErrors = validation.error.errors.map(err => ({
+          field: err.path.join('.'),
+          message: err.message
+        }));
+        return error(res, 'Validasi gagal. Periksa kembali input Anda.', 422, formattedErrors);
       }
 
-      // Hitung total
+      const { items, payment_amount, payment_method, notes, tax_rate } = validation.data;
+
+      // 2. Ambil harga produk dari database & Verifikasi stok
       let totalAmount = 0;
-      const processedItems = items.map((item) => {
-        const subtotal = item.price * item.quantity;
+      const processedItems = [];
+
+      for (const item of items) {
+        const product = await productModel.findById(item.product_id);
+        
+        if (!product) {
+          return error(res, `Produk dengan ID ${item.product_id} tidak ditemukan.`, 404);
+        }
+
+        if (product.stock < item.quantity) {
+          return error(res, `Stok produk '${product.name}' tidak mencukupi (Tersedia: ${product.stock}).`, 400);
+        }
+
+        const subtotal = product.price * item.quantity;
         totalAmount += subtotal;
-        return {
+
+        processedItems.push({
           product_id: item.product_id,
-          product_name: item.product_name,
-          price: item.price,
+          product_name: product.name,
+          price: product.price,
           quantity: item.quantity,
           subtotal,
-        };
-      });
+        });
+      }
 
       const taxAmount = totalAmount * (tax_rate / 100);
       const grandTotal = totalAmount + taxAmount;
 
       if (payment_amount < grandTotal) {
-        return error(res, 'Jumlah pembayaran kurang dari total belanja.', 400);
+        return error(res, `Jumlah pembayaran (Rp${payment_amount.toLocaleString()}) kurang dari total belanja (Rp${grandTotal.toLocaleString()}).`, 400);
       }
 
       const changeAmount = payment_amount - grandTotal;
 
-      // Generate invoice number
+      // 3. Generate invoice number
       const invoiceNumber = await transactionModel.generateInvoiceNumber();
 
-      // Buat transaksi (atomic)
+      // 4. Buat transaksi (atomic)
       const transaction = await transactionModel.create(
         {
           invoice_number: invoiceNumber,
@@ -56,7 +68,7 @@ const transactionController = {
           grand_total: grandTotal,
           payment_amount: payment_amount,
           change_amount: changeAmount,
-          payment_method: payment_method || 'cash',
+          payment_method: payment_method,
           notes: notes || null,
         },
         processedItems
@@ -68,10 +80,6 @@ const transactionController = {
     }
   },
 
-  /**
-   * GET /api/transactions
-   * Mengambil daftar transaksi dengan filter dan pagination
-   */
   getAll: async (req, res, next) => {
     try {
       const { startDate, endDate, page, limit } = req.query;
@@ -83,10 +91,6 @@ const transactionController = {
     }
   },
 
-  /**
-   * GET /api/transactions/:id
-   * Mengambil detail transaksi berdasarkan ID
-   */
   getById: async (req, res, next) => {
     try {
       const transaction = await transactionModel.findById(req.params.id);

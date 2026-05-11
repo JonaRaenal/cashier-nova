@@ -1,17 +1,6 @@
-// ============================================
-// CashierNova — Validate Middleware
-// Menjalankan express-validator rules dan return error
-// Dependencies: express-validator
-// ============================================
-
 const { validationResult } = require('express-validator');
 const { error } = require('../utils/response');
 
-/**
- * Middleware untuk menjalankan validasi dan mengembalikan error jika ada
- * @param {Array} validations - Array express-validator rules
- * @returns {Function} Express middleware
- */
 const validateMiddleware = (validations) => {
   return async (req, res, next) => {
     // Jalankan semua validasi

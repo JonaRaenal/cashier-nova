@@ -1,9 +1,3 @@
-// ============================================
-// CashierNova — Navbar Component
-// Top navigation bar dengan theme toggle dan user info
-// Dependencies: lucide-react, themeStore
-// ============================================
-
 import { Bell, Menu, Sun, Moon, Keyboard, Check, CheckCircle2, Trash2 } from 'lucide-react';
 import useAuthStore from '../../store/authStore';
 import useThemeStore from '../../store/themeStore';

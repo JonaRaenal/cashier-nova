@@ -1,8 +1,3 @@
-// ============================================
-// CashierNova — Notification Store (Zustand)
-// State management for notifications (e.g. successful transactions)
-// ============================================
-
 import { create } from 'zustand';
 
 const useNotificationStore = create((set, get) => ({

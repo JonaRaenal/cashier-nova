@@ -1,9 +1,3 @@
-// ============================================
-// CashierNova — Products Page
-// CRUD produk dengan search, filter, pagination, dan modal
-// Dependencies: productService, lucide-react
-// ============================================
-
 import { useState, useEffect } from 'react';
 import {
   Search,

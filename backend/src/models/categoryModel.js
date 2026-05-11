@@ -1,9 +1,3 @@
-// ============================================
-// CashierNova — Category Model (sql.js)
-// Operasi database untuk tabel categories
-// Dependencies: config/db (sql.js)
-// ============================================
-
 const { getDb, saveDatabase } = require('../config/db');
 
 const queryAll = (sql, params = []) => {

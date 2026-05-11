@@ -1,8 +1,3 @@
-// ============================================
-// CashierNova — Empty State Component
-// Placeholder saat data kosong (reusable)
-// ============================================
-
 const EmptyState = ({
   icon: Icon,
   title = 'Tidak ada data',

@@ -1,27 +1,17 @@
-// ============================================
-// CashierNova — App Root Component
-// Routing utama aplikasi dengan route guards + dark mode init
-// Dependencies: react-router-dom, react.lazy
-// ============================================
-
 import { lazy, Suspense, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import useThemeStore from './store/themeStore';
 
-// Layouts
 import AuthLayout from './layouts/AuthLayout';
 import MainLayout from './layouts/MainLayout';
 
-// Route Guards
 import PrivateRoute from './routes/PrivateRoute';
 import RoleRoute from './routes/RoleRoute';
 
-// Error Boundary
 import ErrorBoundary from './components/shared/ErrorBoundary';
 import LoadingSpinner from './components/shared/LoadingSpinner';
 
-// Lazy-loaded Pages (code splitting)
 const Login = lazy(() => import('./pages/Login'));
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const Cashier = lazy(() => import('./pages/Cashier'));
@@ -30,7 +20,6 @@ const Transactions = lazy(() => import('./pages/Transactions'));
 const Users = lazy(() => import('./pages/Users'));
 const LandingPage = lazy(() => import('./pages/LandingPage'));
 
-// Page loading fallback
 const PageLoader = () => (
   <div className="flex items-center justify-center h-[60vh]">
     <LoadingSpinner size="lg" />
@@ -40,7 +29,6 @@ const PageLoader = () => (
 function App() {
   const { theme, initTheme } = useThemeStore();
 
-  // Inisialisasi tema saat app mount
   useEffect(() => {
     initTheme();
   }, [initTheme]);

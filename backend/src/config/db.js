@@ -1,9 +1,3 @@
-// ============================================
-// CashierNova — Database Connection (sql.js / SQLite)
-// Database embedded tanpa perlu server eksternal
-// Dependencies: sql.js, fs, path
-// ============================================
-
 const initSqlJs = require('sql.js');
 const fs = require('fs');
 const path = require('path');

@@ -1,8 +1,3 @@
-// ============================================
-// CashierNova — Format Currency Utility
-// Format angka ke format Rupiah Indonesia
-// ============================================
-
 export const formatCurrency = (amount) => {
   return new Intl.NumberFormat('id-ID', {
     style: 'currency',

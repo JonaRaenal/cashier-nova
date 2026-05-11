@@ -1,10 +1,3 @@
-// ============================================
-// CashierNova — Dashboard Page
-// Ringkasan penjualan, chart, dan transaksi terbaru
-// Dengan dark mode, skeleton loading, dan responsive design
-// Dependencies: recharts, lucide-react, transactionService
-// ============================================
-
 import { useState, useEffect, useMemo } from 'react';
 import {
   DollarSign,

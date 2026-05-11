@@ -1,8 +1,3 @@
-// ============================================
-// CashierNova — Format Date Utility
-// Format tanggal ke format Indonesia
-// ============================================
-
 export const formatDate = (dateStr, options = {}) => {
   const date = new Date(dateStr);
   const defaultOptions = {

@@ -1,17 +1,7 @@
-// ============================================
-// CashierNova — Product Controller
-// Handler untuk CRUD dan manajemen stok produk
-// Dependencies: productModel
-// ============================================
-
 const productModel = require('../models/productModel');
 const { success, error } = require('../utils/response');
 
 const productController = {
-  /**
-   * GET /api/products
-   * Mengambil daftar produk dengan search, filter, dan pagination
-   */
   getAll: async (req, res, next) => {
     try {
       const { search, category, page, limit } = req.query;
@@ -25,10 +15,6 @@ const productController = {
     }
   },
 
-  /**
-   * GET /api/products/:id
-   * Mengambil detail produk berdasarkan ID
-   */
   getById: async (req, res, next) => {
     try {
       const product = await productModel.findById(req.params.id);
@@ -41,10 +27,6 @@ const productController = {
     }
   },
 
-  /**
-   * POST /api/products
-   * Membuat produk baru
-   */
   create: async (req, res, next) => {
     try {
       const product = await productModel.create(req.body);
@@ -54,10 +36,6 @@ const productController = {
     }
   },
 
-  /**
-   * PUT /api/products/:id
-   * Mengupdate produk
-   */
   update: async (req, res, next) => {
     try {
       const existing = await productModel.findById(req.params.id);
@@ -73,7 +51,6 @@ const productController = {
     }
   },
 
- 
   delete: async (req, res, next) => {
     try {
       const existing = await productModel.findById(req.params.id);
@@ -87,7 +64,6 @@ const productController = {
       next(err);
     }
   },
-
 
   updateStock: async (req, res, next) => {
     try {

@@ -1,17 +1,7 @@
-// ============================================
-// CashierNova — Auth Middleware
-// Verifikasi JWT token di setiap protected route
-// Dependencies: jsonwebtoken, config/env
-// ============================================
-
 const jwt = require('jsonwebtoken');
 const env = require('../config/env');
 const { error } = require('../utils/response');
 
-/**
- * Middleware untuk memverifikasi access token
- * Menyimpan data user di req.user jika valid
- */
 const authMiddleware = (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;

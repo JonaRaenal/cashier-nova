@@ -1,9 +1,3 @@
-// ============================================
-// CashierNova — Auth Layout
-// Layout halaman login dengan branding
-// Dependencies: react-router-dom
-// ============================================
-
 import { Outlet, Navigate } from 'react-router-dom';
 import useAuthStore from '../store/authStore';
 import CountUp from '../components/shared/CountUp';

@@ -1,9 +1,3 @@
-// ============================================
-// CashierNova — Users Page
-// CRUD user dengan role selector dan reset password
-// Dependencies: userService, lucide-react
-// ============================================
-
 import { useState, useEffect } from 'react';
 import { Plus, Edit2, Trash2, Users as UsersIcon, Shield } from 'lucide-react';
 import userService from '../services/userService';

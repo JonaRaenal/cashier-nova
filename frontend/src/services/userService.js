@@ -1,9 +1,3 @@
-// ============================================
-// CashierNova — User Service
-// API calls untuk manajemen user
-// Dependencies: api.js
-// ============================================
-
 import api from './api';
 
 const userService = {

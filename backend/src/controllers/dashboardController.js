@@ -1,14 +1,7 @@
-// ============================================
-// CashierNova — Dashboard Controller (sql.js)
-// Handler untuk data ringkasan dan chart dashboard
-// Dependencies: transactionModel, db
-// ============================================
-
 const transactionModel = require('../models/transactionModel');
 const { getDb } = require('../config/db');
 const { success } = require('../utils/response');
 
-// Helper query
 const queryOne = (sql, params = []) => {
   const db = getDb();
   const stmt = db.prepare(sql);

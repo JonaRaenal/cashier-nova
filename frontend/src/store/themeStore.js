@@ -1,9 +1,3 @@
-// ============================================
-// CashierNova — Theme Store (Zustand)
-// Dark/light mode state management with localStorage persistence
-// Dependencies: zustand
-// ============================================
-
 import { create } from 'zustand';
 
 const useThemeStore = create((set) => ({
@@ -11,13 +5,11 @@ const useThemeStore = create((set) => ({
   theme: localStorage.getItem('theme') || 
     (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'),
 
-  // Toggle tema
   toggleTheme: () => {
     set((state) => {
       const newTheme = state.theme === 'dark' ? 'light' : 'dark';
       localStorage.setItem('theme', newTheme);
 
-      // Terapkan class di root HTML
       if (newTheme === 'dark') {
         document.documentElement.classList.add('dark');
       } else {
@@ -27,7 +19,6 @@ const useThemeStore = create((set) => ({
     });
   },
 
-  // Set tema secara eksplisit
   setTheme: (theme) => {
     localStorage.setItem('theme', theme);
     if (theme === 'dark') {
@@ -38,7 +29,6 @@ const useThemeStore = create((set) => ({
     set({ theme });
   },
 
-  // Inisialisasi tema dari localStorage saat app mount
   initTheme: () => {
     const saved = localStorage.getItem('theme');
     const theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');

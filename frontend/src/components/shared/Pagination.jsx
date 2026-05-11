@@ -1,8 +1,3 @@
-// ============================================
-// CashierNova — Pagination Component
-// Komponen navigasi halaman
-// ============================================
-
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 const Pagination = ({ currentPage, totalPages, onPageChange }) => {

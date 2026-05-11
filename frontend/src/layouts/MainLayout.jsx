@@ -1,9 +1,3 @@
-// ============================================
-// CashierNova — Main Layout
-// Layout utama dengan sidebar dan navbar + dark mode
-// Dependencies: react-router-dom, Sidebar, Navbar
-// ============================================
-
 import { useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import Sidebar from '../components/layout/Sidebar';

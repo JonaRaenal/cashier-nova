@@ -1,8 +1,3 @@
-// ============================================
-// CashierNova — Loading Spinner Component
-// Komponen spinner animasi loading
-// ============================================
-
 const LoadingSpinner = ({ size = 'md', className = '' }) => {
   const sizes = {
     sm: 'w-4 h-4',
